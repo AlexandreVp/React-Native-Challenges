@@ -12,6 +12,7 @@
     "expo": "^38.0.0",
     "react": "16.11.0",
     "react-native": "https://github.com/expo/react-native/archive/sdk-38.0.2.tar.gz",
+    "react-native-reanimated": "~1.9.0",
     "react-native-redash": "^3.3.2",
     "react-native-web": "~0.11.7"
   },

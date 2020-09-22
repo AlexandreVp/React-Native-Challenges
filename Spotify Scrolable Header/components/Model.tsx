@@ -9,14 +9,14 @@ export const MAX_HEADER_HEIGHT = height * (1 - 1 / φ);
 export const HEADER_DELTA = MAX_HEADER_HEIGHT - MIN_HEADER_HEIGHT;
 
 export interface Track {
-  name: string;
-  artist?: string;
+	name: string;
+	artist?: string;
 }
 
 export interface Album {
-  name: string;
-  artist: string;
-  release: number;
-  cover: number;
-  tracks: Track[];
+	name: string;
+	artist: string;
+	release: number;
+	cover: number;
+	tracks: Track[];
 }

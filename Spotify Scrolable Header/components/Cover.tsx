@@ -1,32 +1,48 @@
 import * as React from "react";
 import { Image, StyleSheet, View } from "react-native";
-import { Album, MAX_HEADER_HEIGHT } from "./Model";
+import Animated from "react-native-reanimated";
+
+import { Album, HEADER_DELTA, MAX_HEADER_HEIGHT } from "./Model";
 
 interface CoverProps {
-  album: Album;
+	album: Album;
+	y: Animated.Value<number>;
 }
 
-export default ({ album: { cover } }: CoverProps) => {
-  const scale: any = 1;
-  const opacity = 0.2;
-  return (
-    <View style={[styles.container, { transform: [{ scale }] }]}>
-      <Image style={styles.image} source={cover} />
-      <View
-        style={{ ...StyleSheet.absoluteFillObject, backgroundColor: "black", opacity }}
-      />
-    </View>
-  );
+const { interpolate, Extrapolate } = Animated;
+
+export default ({ album: { cover }, y }: CoverProps) => {
+
+	const scale: any = interpolate(y, {
+		inputRange: [-MAX_HEADER_HEIGHT, 0],
+		outputRange: [4, 1],
+		extrapolateRight: Extrapolate.CLAMP
+	});
+
+	const opacity = interpolate(y, {
+		inputRange: [-64, 0, HEADER_DELTA],
+		outputRange: [0, 0.2, 1],
+		extrapolate: Extrapolate.CLAMP
+	});
+
+	return (
+		<Animated.View style={[styles.container, { transform: [{ scale }] }]}>
+			<Image style={styles.image} source={cover} />
+			<Animated.View
+				style={{ ...StyleSheet.absoluteFillObject, backgroundColor: "black", opacity }}
+			/>
+		</Animated.View>
+	);
 };
 
 const styles = StyleSheet.create({
-  container: {
-    ...StyleSheet.absoluteFillObject,
-    height: MAX_HEADER_HEIGHT,
-  },
-  image: {
-    ...StyleSheet.absoluteFillObject,
-    width: undefined,
-    height: undefined,
-  },
+	container: {
+		...StyleSheet.absoluteFillObject,
+		height: MAX_HEADER_HEIGHT,
+	},
+	image: {
+		...StyleSheet.absoluteFillObject,
+		width: undefined,
+		height: undefined,
+	},
 });

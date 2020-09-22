@@ -1,21 +1,37 @@
 import * as React from "react";
 import {
-	StyleSheet, View, Text, ScrollView,
+	StyleSheet, View
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import Animated from 'react-native-reanimated';
 import { onScroll } from "react-native-redash";
 
-import { Album, MAX_HEADER_HEIGHT, HEADER_DELTA } from "./Model";
+import { Album, MAX_HEADER_HEIGHT } from "./Model";
 import Track from "./Track";
+import ShufflePlay from "./ShufflePlay";
 
 interface ContentProps {
 	album: Album;
-	y: Animated.Value<number>
+	y: Animated.Value<number>;
+	btnOpacity: Animated.Node<number>;
 }
 
-export default ({ album: { artist, tracks }, y }: ContentProps) => {
-	const height = MAX_HEADER_HEIGHT;
+const { interpolate, Extrapolate, cond, eq } = Animated;
+
+export default ({ album: { artist, tracks }, y, btnOpacity }: ContentProps) => {
+
+	const height = interpolate(y, {
+		inputRange: [-MAX_HEADER_HEIGHT, 0],
+		outputRange: [0, MAX_HEADER_HEIGHT],
+		extrapolate: Extrapolate.CLAMP
+	});
+
+	const opacity = interpolate(y, {
+		inputRange: [-MAX_HEADER_HEIGHT/2, 0, MAX_HEADER_HEIGHT/2],
+		outputRange: [0, 1, 0],
+		extrapolate: Extrapolate.CLAMP
+	});
+
 	return (
 		<Animated.ScrollView
 			onScroll={onScroll({ y })}
@@ -24,7 +40,7 @@ export default ({ album: { artist, tracks }, y }: ContentProps) => {
 			scrollEventThrottle={1}
 		>
 			<View style={styles.header}>
-				<View
+				<Animated.View
 					style={[styles.gradient, { height }]}
 				>
 					<LinearGradient
@@ -33,12 +49,15 @@ export default ({ album: { artist, tracks }, y }: ContentProps) => {
 						end={[0, 1]}
 						colors={["transparent", "rgba(0, 0, 0, 0.2)", "black"]}
 					/>
-				</View>
+				</Animated.View>
 				<View style={styles.artistContainer}>
-					<Text style={styles.artist}>{artist}</Text>
+					<Animated.Text style={[styles.artist, { opacity }]}>{artist}</Animated.Text>
 				</View>
 			</View>
 			<View style={styles.tracks}>
+				<Animated.View style={{ opacity: cond(eq(btnOpacity, 1), 0, 1) }}>
+					<ShufflePlay />
+				</Animated.View>
 				{
 					tracks.map((track, key) => (
 						<Track

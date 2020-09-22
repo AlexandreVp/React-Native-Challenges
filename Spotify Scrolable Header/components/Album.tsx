@@ -3,7 +3,7 @@ import { View, StyleSheet } from "react-native";
 import Animated from 'react-native-reanimated';
 
 import {
-	Album, MIN_HEADER_HEIGHT, HEADER_DELTA,
+	Album, MIN_HEADER_HEIGHT, HEADER_DELTA
 } from "./Model";
 import Header from "./Header";
 import Content from "./Content";
@@ -14,28 +14,31 @@ interface AlbumProps {
 	album: Album;
 }
 
-const { Value } = Animated;
+const { Value, cond, greaterOrEq } = Animated;
 
 export default ({ album }: AlbumProps) => {
 	
 	const { artist } = album;
 	const y = new Value(0);
 
+	const opacity = cond(greaterOrEq(y, HEADER_DELTA + BUTTON_HEIGHT/2), 1, 0);
+
 	return (
 		<View style={styles.container}>
 			<Cover {...{ y, album }} />
-			<Content {...{ y, album }} />
+			<Content {...{ y, album, btnOpacity: opacity }} />
 			<Header {...{ y, artist }} />
-			<View
+			<Animated.View
 				style={{
 					position: "absolute",
-					top: MIN_HEADER_HEIGHT - BUTTON_HEIGHT / 2,
+					top: MIN_HEADER_HEIGHT,
 					left: 0,
 					right: 0,
+					opacity
 				}}
 			>
 				<ShufflePlay />
-			</View>
+			</Animated.View>
 		</View>
 	);
 };

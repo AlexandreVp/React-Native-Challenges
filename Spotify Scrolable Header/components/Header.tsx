@@ -1,17 +1,37 @@
 import * as React from "react";
-import { Text, StyleSheet, View } from "react-native";
+import { StyleSheet } from "react-native";
 import Constants from "expo-constants";
+import Animated from 'react-native-reanimated';
+
 import { MIN_HEADER_HEIGHT, HEADER_DELTA } from "./Model";
 
 interface HeaderProps {
 	artist: string;
+	y: Animated.Value<number>;
 }
 
-export default ({ artist }: HeaderProps) => (
-	<View style={styles.container}>
-		<Text style={styles.title}>{artist}</Text>
-	</View>
-);
+const { interpolate, Extrapolate } = Animated;
+
+export default ({ artist, y }: HeaderProps) => {
+
+	const opacity = interpolate(y, {
+		inputRange: [HEADER_DELTA - 16, HEADER_DELTA],
+		outputRange: [0, 1],
+		extrapolate: Extrapolate.CLAMP
+	});
+
+	const textOpacity = interpolate(y, {
+		inputRange: [HEADER_DELTA - 8, HEADER_DELTA - 4],
+		outputRange: [0, 1],
+		extrapolate: Extrapolate.CLAMP
+	}); 
+
+	return (
+		<Animated.View style={[styles.container, { opacity }]}>
+			<Animated.Text style={[styles.title, { opacity: textOpacity }]}>{artist}</Animated.Text>
+		</Animated.View>
+	)
+};
 
 const styles = StyleSheet.create({
 	container: {

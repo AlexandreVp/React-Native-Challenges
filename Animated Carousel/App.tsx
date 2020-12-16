@@ -26,6 +26,8 @@ const CARD_WIDTH = screenWidth - (CARD_PADDING * 2);
 
 const teste = 1;
 
+const t2 = 2;
+
 export default function App() {
 
 	const offsetX = useValue(0);

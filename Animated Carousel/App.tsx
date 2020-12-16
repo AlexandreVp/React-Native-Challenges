@@ -26,10 +26,13 @@ const CARD_WIDTH = screenWidth - (CARD_PADDING * 2);
 
 const teste = 1;
 
+<<<<<<< HEAD
 const teste2 = 2;
 
 const teste3 = 3;
 
+=======
+>>>>>>> parent of 1b2c7d0... Test 2
 export default function App() {
 
 	const offsetX = useValue(0);

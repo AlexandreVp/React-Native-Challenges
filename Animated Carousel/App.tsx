@@ -28,6 +28,8 @@ const teste = 1;
 
 const teste2 = 2;
 
+const teste3 = 3;
+
 export default function App() {
 
 	const offsetX = useValue(0);

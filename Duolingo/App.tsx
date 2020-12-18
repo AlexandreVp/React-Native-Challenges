@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { StatusBar } from 'react-native';
 import * as Font from 'expo-font';
 import AppLoading from 'expo-app-loading';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
@@ -27,6 +28,7 @@ export default function App() {
 	  } else {
 			return (
 				<SafeAreaProvider>
+					<StatusBar hidden />
 					<Duolingo />
 				</SafeAreaProvider>
 			);

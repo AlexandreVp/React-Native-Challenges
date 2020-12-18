@@ -14,38 +14,52 @@ import { calculateLayout, lastOrder, Offset, reorder } from "./Layout";
 import Placeholder, { MARGIN_TOP, MARGIN_LEFT } from "./components/Placeholder";
 
 interface SortableWordProps {
-  offsets: Offset[];
-  children: ReactElement<{ id: number }>;
-  index: number;
-  containerWidth: number;
+	offsets: Offset[];
+	children: ReactElement<{ id: number }>;
+	index: number;
+	containerWidth: number;
 }
 
-const SortableWord = ({
-  offsets,
-  index,
-  children,
-  containerWidth,
-}: SortableWordProps) => {
-  const offset = offsets[index];
-  const style = useAnimatedStyle(() => {
-    return {
-      position: "absolute",
-      top: 0,
-      left: 0,
-      right: 0,
-      bottom: 0,
-    };
-  });
-  return (
-    <>
-      <Placeholder offset={offset} />
-      <Animated.View style={style}>
-        <Animated.View style={StyleSheet.absoluteFill}>
-          {children}
-        </Animated.View>
-      </Animated.View>
-    </>
-  );
+const SortableWord = ({ offsets, index, children, containerWidth, }: SortableWordProps) => {
+
+	const offset = offsets[index];
+	const isInBank = useDerivedValue(() => offset.order.value === -1);
+	const translateX = useDerivedValue(() => {
+		if (isInBank.value) {
+			return offset.originalX.value - MARGIN_LEFT;
+		}
+		return offset.x.value;
+	});
+	const translateY = useDerivedValue(() => {
+		if (isInBank.value) {
+			return offset.originalY.value + MARGIN_TOP;
+		}
+		return offset.y.value;
+	});
+	const style = useAnimatedStyle(() => {
+		return {
+			position: "absolute",
+			top: 0,
+			left: 0,
+			width: offset.width.value + 0.1,
+			height: offset.height.value,
+			transform: [
+				{ translateX: translateX.value, },
+				{ translateY: translateY.value, }
+			]
+		};
+	});
+
+	return (
+		<>
+			<Placeholder offset={offset} />
+			<Animated.View style={style}>
+				<Animated.View style={StyleSheet.absoluteFill}>
+					{children}
+				</Animated.View>
+			</Animated.View>
+		</>
+	);
 };
 
 export default SortableWord;

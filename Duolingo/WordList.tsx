@@ -21,7 +21,6 @@ const styles = StyleSheet.create({
 		justifyContent: "center",
 	},
 });
-
 interface WordListProps {
   	children: ReactElement<{ id: number }>[];
 }
@@ -30,7 +29,7 @@ const WordList = ({ children }: WordListProps) => {
 
 	const [ready, setReady] = useState(false);
 	const offsets = children.map(() => ({
-		order: useSharedValue(-1),
+		order: useSharedValue(0),
 		width: useSharedValue(0),
 		height: useSharedValue(0),
 		x: useSharedValue(0),
@@ -52,14 +51,14 @@ const WordList = ({ children }: WordListProps) => {
 						} 
 					}) => {
 						const offset = offsets[index];
-						offset.order.value = index;
+						offset.order.value = -1;
 						offset.width.value = width;
 						offset.height.value = height;
 						offset.originalX.value = x;
 						offset.originalY.value = y;
 						runOnUI(() => {
 							"worklet";
-							if (offsets.filter((o) => o.order.value === -1).length === 0) {
+							if (offsets.filter((o) => o.order.value !== -1).length === 0) {
 								runOnJS(calculateLayout)(offsets, containerWidth);
 								runOnJS(setReady)(true);
 							}

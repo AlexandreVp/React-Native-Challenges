@@ -1,3 +1,5 @@
+import { move } from "react-native-redash";
+
 import { SharedValues } from "../components/AnimatedHelpers";
 
 export const MARGIN_TOP = 150;
@@ -9,7 +11,6 @@ export const SENTENCE_HEIGHT = (NUMBER_OF_LINES - 1) * WORD_HEIGHT;
 export type Offset = SharedValues<{
 	order: number;
 	width: number;
-	height: number;
 	x: number;
 	y: number;
 	originalX: number;
@@ -20,23 +21,42 @@ const isNotInBank = (offset: Offset) => {
 	"Worklet";
 	return offset.order.value !== -1;
 };
-  
+
 const byOrder = (a: Offset, b: Offset) => {
 	"Worklet";
 	return a.order.value > b.order.value ? 1 : -1;
 };
 
+export const lastOrder = (input: Offset[]) => {
+	"Worklet";
+	return input.filter(isNotInBank).length;
+};
+
+export const remove = (input: Offset[], index: number) => {
+	"Worklet";
+	const offsets = input
+		.filter((o, i) => i !== index)
+		.filter(isNotInBank)
+		.sort(byOrder);
+	offsets.map((offset, i) => (offset.order.value = i));
+};
+
+export const reorder = (input: Offset[], from: number, to: number) => {
+	"Worklet";
+	const offsets = input.filter(isNotInBank).sort(byOrder);
+	const newOffset = move(offsets, from, to);
+	newOffset.map((offset, index) => (offset.order.value = index));
+};
+
 export const calculateLayout = (input: Offset[], containerWidth: number) => {
 	"Worklet";
 	const offsets = input.filter(isNotInBank).sort(byOrder);
-	
 	if (offsets.length === 0) {
 		return;
 	}
-	
 	let lineNumber = 0;
 	let lineBreak = 0;
-	
+
 	offsets.forEach((offset, index) => {
 		const total = offsets
 			.slice(lineBreak, index)
@@ -49,7 +69,6 @@ export const calculateLayout = (input: Offset[], containerWidth: number) => {
 		} else {
 			offset.x.value = total;
 		}
-
 		offset.y.value = WORD_HEIGHT * lineNumber;
 	});
 };

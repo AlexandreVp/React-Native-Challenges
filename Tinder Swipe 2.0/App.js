@@ -2,6 +2,7 @@ import React from 'react';
 import { StyleSheet, Text, View, SafeAreaView } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { Feather as Icon } from '@expo/vector-icons';
+import { PanGestureHandler } from 'react-native-gesture-handler';
 
 import { profiles as profilesArray } from './utils/Helpers';
 import Card from './components/Card';
@@ -20,8 +21,14 @@ export default function App() {
 			</View>
 
 			<View style={styles.cards}>
-				
-				<Card prof={lastProfile} />
+				{
+					profiles.map(profile => (
+						<Card key={profile.id} prof={profile} />
+					))
+				}
+				{/* <PanGestureHandler> */}
+					<Card prof={lastProfile} />
+				{/* </PanGestureHandler> */}
 			</View>
 
 			<View style={styles.footer}>

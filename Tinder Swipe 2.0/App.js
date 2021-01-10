@@ -3,14 +3,50 @@ import { StyleSheet, Text, View, SafeAreaView } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { Feather as Icon } from '@expo/vector-icons';
 import { PanGestureHandler } from 'react-native-gesture-handler';
+import Animated, { 
+	useAnimatedGestureHandler, 
+	useSharedValue, 
+	useAnimatedStyle, 
+	withSpring,
+	interpolate
+} from 'react-native-reanimated';
 
 import { profiles as profilesArray } from './utils/Helpers';
 import Card from './components/Card';
 
 export default function App() {
 
+	//PROFILES
 	const lastProfile = profilesArray[0];
 	const profiles = profilesArray.slice(1, profilesArray.length).reverse();
+
+	//ANIMATED
+	const translationX = useSharedValue(0);
+	const translationY = useSharedValue(0);
+
+
+	const onGestureEvent = useAnimatedGestureHandler({
+		onStart: () => {
+
+		},
+		onActive: (event, context) => {
+			translationX.value = event.translationX;
+			translationY.value = event.translationY;
+		},
+		onEnd: () => {
+			translationX.value = withSpring(0);
+			translationY.value = withSpring(0);
+		}
+	});
+
+	const cardStyle = useAnimatedStyle(() => {
+		return {
+			transform: [
+				{translateX: translationX.value},
+				{translateY: translationY.value}
+			]
+		}
+	})
 
 	return (
 		<SafeAreaView style={styles.container}>
@@ -26,9 +62,11 @@ export default function App() {
 						<Card key={profile.id} prof={profile} />
 					))
 				}
-				{/* <PanGestureHandler> */}
-					<Card prof={lastProfile} />
-				{/* </PanGestureHandler> */}
+				<PanGestureHandler onGestureEvent={onGestureEvent}>
+					<Animated.View style={[cardStyle, StyleSheet.absoluteFillObject]}>
+						<Card prof={lastProfile} />
+					</Animated.View>
+				</PanGestureHandler>
 			</View>
 
 			<View style={styles.footer}>

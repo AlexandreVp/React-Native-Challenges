@@ -20,6 +20,7 @@ export default function App() {
 			</View>
 
 			<View style={styles.cards}>
+				
 				<Card prof={lastProfile} />
 			</View>
 

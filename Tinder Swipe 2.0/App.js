@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from 'react';
-import { StyleSheet, View, SafeAreaView, Dimensions, TouchableOpacity } from 'react-native';
+import { StyleSheet, View, SafeAreaView, Dimensions, TouchableOpacity, Text } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { Feather as Icon } from '@expo/vector-icons';
 import { PanGestureHandler } from 'react-native-gesture-handler';
@@ -23,23 +23,25 @@ export default function App() {
 
 	//PROFILES
 	const [lastProfile, setLastProfile] = useState(profilesArray[0]);
-	let profiles = profilesArray.slice(1, profilesArray.length).reverse();
+	const [nextProfile, setNextProfile] = useState(profilesArray[1]);
+	const [profiles, setProfiles] = useState(profilesArray.slice(2, profilesArray.length));
 
 	//ANIMATED
 	const translationX = useSharedValue(0);
 	const translationY = useSharedValue(0);
 	const velocityX = useSharedValue(0);
 
-	const onSwiped = swipe => {
+	const onSwiped = useCallback(swipe => {
 		"Worklet"
 		if (swipe > 0 || swipe < 0) {
-			setLastProfile(profiles.pop());
-
+			setLastProfile(nextProfile);
+			setNextProfile(profiles.shift());
+			
 			translationX.value = 0;
 			translationY.value = 0;
 			velocityX.value = 0;
 		}
-	};
+	});
 
 	const onGestureEvent = useAnimatedGestureHandler({
 		onStart: (event, context) => {
@@ -56,21 +58,34 @@ export default function App() {
 			let snapPoint;
 
 			if (event.translationX < 0 && event.velocityX < -200) {
-				snapPoint = -SCREEN_WIDTH*2;
+				snapPoint = -SCREEN_WIDTH*3;
 			} else if (event.translationX > 0 && event.velocityX > 200) {
-				snapPoint = SCREEN_WIDTH*2;
+				snapPoint = SCREEN_WIDTH*3;
 			} else {
 				snapPoint = 0;
 			}
 
-			translationX.value = withSpring(snapPoint, {
-				damping: 14,
-				stiffness: 121.6
-			});
-			translationY.value = withSpring(0, {
-				damping: 14,
-				stiffness: 121.6
-			});
+			if (snapPoint === 0) {
+				translationX.value = withSpring(snapPoint, {
+					damping: 14,
+					stiffness: 121.6,
+				});
+				translationY.value = withSpring(0, {
+					damping: 14,
+					stiffness: 121.6,
+				});
+			} else {
+				translationX.value = withSpring(snapPoint, {
+					damping: 14,
+					stiffness: 110,
+					mass: 3
+				});
+				translationY.value = withSpring(0, {
+					damping: 14,
+					stiffness: 110,
+					mass: 3
+				});
+			}
 
 			context.snap = snapPoint;
 		},
@@ -91,7 +106,13 @@ export default function App() {
 						Extrapolate.CLAMP
 					)}deg`
 				},
-			]
+			],
+			opacity: interpolate(
+				translationX.value,
+				[-SCREEN_WIDTH*10, 0, SCREEN_WIDTH*10],
+				[0, 1, 0],
+				Extrapolate.CLAMP
+			)
 		};
 	});
 
@@ -127,10 +148,8 @@ export default function App() {
 
 			<View style={styles.cards}>
 				{
-					profiles &&
-					profiles.map(profile => (
-						<Card key={profile.id} prof={profile} />
-					))
+					nextProfile &&
+					<Card key={nextProfile.id} prof={nextProfile}/>
 				}
 				{
 					lastProfile &&
@@ -140,14 +159,16 @@ export default function App() {
 						</Animated.View>
 					</PanGestureHandler>
 				}
+				{
+					!lastProfile &&
+					<Text style={styles.noOneAround}>Não há ninguém por perto</Text>
+				}
 			</View>
 
 			<View style={styles.footer}>
-				<TouchableOpacity onPress={() => {console.log(lastProfile)}}>
 				<View style={styles.circle}>
 					<Icon name="x" size={32} color="#ec5288" />
 				</View>
-				</TouchableOpacity>
 				<View style={styles.circle}>
 					<Icon name="heart" size={32} color="#6ee3b4" />
 				</View>
@@ -171,6 +192,8 @@ const styles = StyleSheet.create({
 		flex: 1,
 		margin: 8,
 		zIndex: 100,
+		justifyContent: 'center',
+		alignItems: 'center'
 	},
 	footer: {
 		flexDirection: "row",
@@ -190,4 +213,7 @@ const styles = StyleSheet.create({
 		shadowOpacity: 0.18,
 		shadowRadius: 2,
 	},
+	noOneAround: {
+		color: 'gray'
+	}
 });

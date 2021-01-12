@@ -1,5 +1,5 @@
-import React from 'react';
-import { StyleSheet, Text, View, SafeAreaView, Dimensions } from 'react-native';
+import React, { useState, useCallback } from 'react';
+import { StyleSheet, View, SafeAreaView, Dimensions, TouchableOpacity } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { Feather as Icon } from '@expo/vector-icons';
 import { PanGestureHandler } from 'react-native-gesture-handler';
@@ -10,6 +10,7 @@ import Animated, {
 	withSpring,
 	interpolate,
 	Extrapolate,
+	runOnJS
 } from 'react-native-reanimated';
 
 import { profiles as profilesArray } from './utils/Helpers';
@@ -21,16 +22,28 @@ const { width: SCREEN_WIDTH } = Dimensions.get('window');
 export default function App() {
 
 	//PROFILES
-	const lastProfile = profilesArray[0];
-	const profiles = profilesArray.slice(1, profilesArray.length).reverse();
+	const [lastProfile, setLastProfile] = useState(profilesArray[0]);
+	let profiles = profilesArray.slice(1, profilesArray.length).reverse();
 
 	//ANIMATED
 	const translationX = useSharedValue(0);
 	const translationY = useSharedValue(0);
 	const velocityX = useSharedValue(0);
 
+	const onSwiped = swipe => {
+		"Worklet"
+		if (swipe > 0 || swipe < 0) {
+			setLastProfile(profiles.pop());
+
+			translationX.value = 0;
+			translationY.value = 0;
+			velocityX.value = 0;
+		}
+	};
+
 	const onGestureEvent = useAnimatedGestureHandler({
 		onStart: (event, context) => {
+
 			context.posX = translationX.value;
 			context.posY = translationY.value;
 		},
@@ -43,9 +56,9 @@ export default function App() {
 			let snapPoint;
 
 			if (event.translationX < 0 && event.velocityX < -200) {
-				snapPoint = -SCREEN_WIDTH*1.5;
+				snapPoint = -SCREEN_WIDTH*2;
 			} else if (event.translationX > 0 && event.velocityX > 200) {
-				snapPoint = SCREEN_WIDTH*1.5;
+				snapPoint = SCREEN_WIDTH*2;
 			} else {
 				snapPoint = 0;
 			}
@@ -58,9 +71,11 @@ export default function App() {
 				damping: 14,
 				stiffness: 121.6
 			});
+
+			context.snap = snapPoint;
 		},
-		onFinish: () => {
-			console.log('finished');
+		onFinish: (event, context) => {
+			runOnJS(onSwiped)(context.snap);
 		}
 	});
 
@@ -112,21 +127,27 @@ export default function App() {
 
 			<View style={styles.cards}>
 				{
+					profiles &&
 					profiles.map(profile => (
 						<Card key={profile.id} prof={profile} />
 					))
 				}
-				<PanGestureHandler onGestureEvent={onGestureEvent}>
-					<Animated.View style={[cardStyle, StyleSheet.absoluteFillObject]}>
-						<Card prof={lastProfile} nopeStyle={nopeOpacityStyle} likeStyle={likeOpacityStyle}/>
-					</Animated.View>
-				</PanGestureHandler>
+				{
+					lastProfile &&
+					<PanGestureHandler onGestureEvent={onGestureEvent}>
+						<Animated.View style={[cardStyle, StyleSheet.absoluteFillObject]}>
+							<Card prof={lastProfile} nopeStyle={nopeOpacityStyle} likeStyle={likeOpacityStyle}/>
+						</Animated.View>
+					</PanGestureHandler>
+				}
 			</View>
 
 			<View style={styles.footer}>
+				<TouchableOpacity onPress={() => {console.log(lastProfile)}}>
 				<View style={styles.circle}>
 					<Icon name="x" size={32} color="#ec5288" />
 				</View>
+				</TouchableOpacity>
 				<View style={styles.circle}>
 					<Icon name="heart" size={32} color="#6ee3b4" />
 				</View>

@@ -40,7 +40,17 @@ export default function App() {
 			velocityX.value = event.velocityX;
 		},
 		onEnd: (event, context) => {
-			translationX.value = withSpring(0, {
+			let snapPoint;
+
+			if (event.translationX < 0 && event.velocityX < -200) {
+				snapPoint = -SCREEN_WIDTH*1.5;
+			} else if (event.translationX > 0 && event.velocityX > 200) {
+				snapPoint = SCREEN_WIDTH*1.5;
+			} else {
+				snapPoint = 0;
+			}
+
+			translationX.value = withSpring(snapPoint, {
 				damping: 14,
 				stiffness: 121.6
 			});
@@ -48,6 +58,9 @@ export default function App() {
 				damping: 14,
 				stiffness: 121.6
 			});
+		},
+		onFinish: () => {
+			console.log('finished');
 		}
 	});
 
@@ -103,7 +116,7 @@ export default function App() {
 						<Card key={profile.id} prof={profile} />
 					))
 				}
-				<PanGestureHandler onHandlerStateChange={onGestureEvent} onGestureEvent={onGestureEvent}>
+				<PanGestureHandler onGestureEvent={onGestureEvent}>
 					<Animated.View style={[cardStyle, StyleSheet.absoluteFillObject]}>
 						<Card prof={lastProfile} nopeStyle={nopeOpacityStyle} likeStyle={likeOpacityStyle}/>
 					</Animated.View>

@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, View, SafeAreaView } from 'react-native';
+import { StyleSheet, Text, View, SafeAreaView, Dimensions } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { Feather as Icon } from '@expo/vector-icons';
 import { PanGestureHandler } from 'react-native-gesture-handler';
@@ -8,11 +8,15 @@ import Animated, {
 	useSharedValue, 
 	useAnimatedStyle, 
 	withSpring,
-	interpolate
+	interpolate,
+	Extrapolate,
 } from 'react-native-reanimated';
 
 import { profiles as profilesArray } from './utils/Helpers';
 import Card from './components/Card';
+
+
+const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
 export default function App() {
 
@@ -23,30 +27,67 @@ export default function App() {
 	//ANIMATED
 	const translationX = useSharedValue(0);
 	const translationY = useSharedValue(0);
-
+	const velocityX = useSharedValue(0);
 
 	const onGestureEvent = useAnimatedGestureHandler({
-		onStart: () => {
-
+		onStart: (event, context) => {
+			context.posX = translationX.value;
+			context.posY = translationY.value;
 		},
 		onActive: (event, context) => {
-			translationX.value = event.translationX;
-			translationY.value = event.translationY;
+			translationX.value = event.translationX + context.posX;
+			translationY.value = event.translationY + context.posY;
+			velocityX.value = event.velocityX;
 		},
-		onEnd: () => {
-			translationX.value = withSpring(0);
-			translationY.value = withSpring(0);
+		onEnd: (event, context) => {
+			translationX.value = withSpring(0, {
+				damping: 14,
+				stiffness: 121.6
+			});
+			translationY.value = withSpring(0, {
+				damping: 14,
+				stiffness: 121.6
+			});
 		}
 	});
 
 	const cardStyle = useAnimatedStyle(() => {
 		return {
 			transform: [
-				{translateX: translationX.value},
-				{translateY: translationY.value}
+				{ translateX: translationX.value },
+				{ translateY: translationY.value },
+				{ rotateZ: `${interpolate(
+						translationX.value,
+						[-SCREEN_WIDTH/2, SCREEN_WIDTH/2],
+						[-15, 15],
+						Extrapolate.CLAMP
+					)}deg`
+				},
 			]
-		}
-	})
+		};
+	});
+
+	const likeOpacityStyle = useAnimatedStyle(() => {
+		return {
+			opacity: interpolate(
+				translationX.value,
+				[0, SCREEN_WIDTH/4],
+				[0, 1],
+				Extrapolate.CLAMP
+			)
+		};
+	});
+
+	const nopeOpacityStyle = useAnimatedStyle(() => {
+		return {
+			opacity: interpolate(
+				translationX.value,
+				[-SCREEN_WIDTH/4, 0],
+				[1, 0],
+				Extrapolate.CLAMP
+			)
+		};
+	});
 
 	return (
 		<SafeAreaView style={styles.container}>
@@ -62,9 +103,9 @@ export default function App() {
 						<Card key={profile.id} prof={profile} />
 					))
 				}
-				<PanGestureHandler onGestureEvent={onGestureEvent}>
+				<PanGestureHandler onHandlerStateChange={onGestureEvent} onGestureEvent={onGestureEvent}>
 					<Animated.View style={[cardStyle, StyleSheet.absoluteFillObject]}>
-						<Card prof={lastProfile} />
+						<Card prof={lastProfile} nopeStyle={nopeOpacityStyle} likeStyle={likeOpacityStyle}/>
 					</Animated.View>
 				</PanGestureHandler>
 			</View>

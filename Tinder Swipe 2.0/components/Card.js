@@ -1,23 +1,22 @@
 import React from 'react';
 import { View, StyleSheet, Image, Text } from 'react-native';
+import Animated from 'react-native-reanimated';
 
 const Card = (props) => {
 
-    const { prof: profile } = props;
-
-    console.log(profile);
+    const { prof: profile, likeStyle, nopeStyle } = props;
 
     return (
         <View style={StyleSheet.absoluteFill}>
             <Image style={styles.image} source={profile.profile} />
             <View style={styles.overlay}>
                 <View style={styles.header}>
-                    <View style={styles.like}>
+                    <Animated.View style={[styles.like, likeStyle == undefined ? {opacity: 0} : likeStyle]}>
                         <Text style={styles.likeLabel}>LIKE</Text>
-                    </View>
-                    <View style={styles.nope}>
+                    </Animated.View>
+                    <Animated.View style={[styles.nope, nopeStyle == undefined ? {opacity: 0} : nopeStyle]}>
                         <Text style={styles.nopeLabel}>NOPE</Text>
-                    </View>
+                    </Animated.View>
                 </View>
                 <View style={styles.footer}>
                     <Text style={styles.name}>{profile.name}</Text>

@@ -2,7 +2,7 @@
 // Illustrations by: SAMji https://dribbble.com/SAMji_illustrator
 
 import React from 'react';
-import { StyleSheet, View, SafeAreaView, Dimensions, Image } from 'react-native';
+import { StyleSheet, View, SafeAreaView, Dimensions, Image, ImageBackground } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { PanGestureHandler, ScrollView, FlatList } from 'react-native-gesture-handler';
 import Animated, { 
@@ -12,7 +12,8 @@ import Animated, {
 	withSpring,
 	interpolate,
 	Extrapolate,
-	runOnJS
+	runOnJS,
+	useAnimatedScrollHandler
 } from 'react-native-reanimated';
 
 
@@ -37,9 +38,27 @@ const imageHeight = SCREEN_WIDTH * 1.1;
 export default function App() {
 
 
+	const onScrollEvent = useAnimatedScrollHandler((event) => {
+		console.log(event.contentOffset.x);
+	});
+
 	return (
 		<SafeAreaView style={styles.container}>
 			<StatusBar hidden/>
+			<View style={styles.backgroundImageContainer}>
+				{
+					data.map((value, index) => {
+						return (
+							<Image 
+								key={`image${index}`}
+								source={{ uri: value }}
+								style={styles.backgroundImage}
+								blurRadius={12}
+							/>
+						)
+					})
+				}
+			</View>
 			<AnimatedFlatlist 
 				data={data}
 				keyExtractor={(_, index) => index.toString()}
@@ -52,6 +71,7 @@ export default function App() {
 						</View>
 					)
 				}}
+				onScroll={onScrollEvent}
 			/>
 			{/* <FlatList 
 				data={data}
@@ -67,7 +87,7 @@ export default function App() {
 				}}
 			/>
 			<ScrollView 
-				
+					
 			/> */}
 		</SafeAreaView>
 	);
@@ -86,6 +106,12 @@ const styles = StyleSheet.create({
 	image: {
 		width: imageWidth,
 		height: imageHeight,
-		borderRadius: 16
+		borderRadius: 16,
+	},
+	backgroundImageContainer: {
+		...StyleSheet.absoluteFillObject
+	},
+	backgroundImage: {
+		...StyleSheet.absoluteFillObject
 	}
 });

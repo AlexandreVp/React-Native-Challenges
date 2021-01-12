@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { StyleSheet, View, SafeAreaView, Dimensions, TouchableOpacity, Text } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { Feather as Icon } from '@expo/vector-icons';
@@ -34,12 +34,18 @@ export default function App() {
 	const onSwiped = useCallback(swipe => {
 		"Worklet"
 		if (swipe > 0 || swipe < 0) {
-			setLastProfile(nextProfile);
-			setNextProfile(profiles.shift());
+			setTimeout(() => {
+				setLastProfile(nextProfile);
+			}, 100);
+			setTimeout(() => {
+				setNextProfile(profiles.shift());
+			}, 300);
+			setTimeout(() => {
+				translationX.value = 0;
+				translationY.value = 0;
+				velocityX.value = 0;
+			}, 200);
 			
-			translationX.value = 0;
-			translationY.value = 0;
-			velocityX.value = 0;
 		}
 	});
 
@@ -65,27 +71,14 @@ export default function App() {
 				snapPoint = 0;
 			}
 
-			if (snapPoint === 0) {
-				translationX.value = withSpring(snapPoint, {
-					damping: 14,
-					stiffness: 121.6,
-				});
-				translationY.value = withSpring(0, {
-					damping: 14,
-					stiffness: 121.6,
-				});
-			} else {
-				translationX.value = withSpring(snapPoint, {
-					damping: 14,
-					stiffness: 110,
-					mass: 3
-				});
-				translationY.value = withSpring(0, {
-					damping: 14,
-					stiffness: 110,
-					mass: 3
-				});
-			}
+			translationX.value = withSpring(snapPoint, {
+				damping: 14,
+				stiffness: 140,
+			});
+			translationY.value = withSpring(0, {
+				damping: 14,
+				stiffness: 140,
+			});
 
 			context.snap = snapPoint;
 		},
@@ -106,13 +99,7 @@ export default function App() {
 						Extrapolate.CLAMP
 					)}deg`
 				},
-			],
-			opacity: interpolate(
-				translationX.value,
-				[-SCREEN_WIDTH*10, 0, SCREEN_WIDTH*10],
-				[0, 1, 0],
-				Extrapolate.CLAMP
-			)
+			]
 		};
 	});
 

@@ -13,7 +13,7 @@ export default function App() {
 				content='For the things we have to learn before we can do them, we learn by doing them. REACT NATIVE ❤'
 				style={styles.containerStyle}
 				textStyle={styles.textStyle}
-				duration={350}
+				duration={300}
 				onFinish={() => {}}
 			/>
 		</View>

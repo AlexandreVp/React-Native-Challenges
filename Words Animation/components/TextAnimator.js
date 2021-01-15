@@ -95,7 +95,7 @@ const TextAnimator = props => {
 
         setTimeout(() => {
             animated(toValue === 0 ? 1 : 0)
-        }, toValue === 0 ? props.duration/5*arrayLength+2000 : props.duration/5*arrayLength+4000);
+        }, toValue === 0 ? props.duration/5*arrayLength+2000 : props.duration/5*arrayLength+5000);
     });
 
     useEffect(() => {
@@ -115,7 +115,7 @@ const TextAnimator = props => {
                                     translateY: interpolate(
                                         animatedValues[index].value,
                                         [0, 1],
-                                        [10, -10],
+                                        [10, -5, -10],
                                         Extrapolate.CLAMP
                                     )
                                 }

@@ -14,7 +14,7 @@ export default function App() {
 				style={styles.containerStyle}
 				textStyle={styles.textStyle}
 				duration={600}
-				onFinish={() => {console.log('terminou')}}
+				onFinish={() => {}}
 			/>
 		</View>
 	);

@@ -1,26 +1,37 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Transitioning, Transition } from 'react-native-reanimated';
 
 import data from './Utils/data';
+
+const transition = (
+	<Transition.Together>
+		<Transition.In type='fade' durationMs={200}/>
+		<Transition.Change  />
+		<Transition.Out type='fade' durationMs={200}/>
+	</Transition.Together>
+)
 
 export default function App() {
 
 	const [currentIndex, setCurrentIndex] = useState(null);
+	const transitionRef = useRef();
 
 	return (
-		<View style={styles.container}>
+		<Transitioning.View
+			ref={transitionRef}
+			transition={transition}
+			style={styles.container}
+		>
 			<StatusBar hidden />
 			{data.map(({bg, color, category, subCategories}, index) => {
 				return (
 					<TouchableOpacity 
 						key={category} 
 						onPress={() => {
-							if (index === currentIndex) {
-								setCurrentIndex(null);
-							} else {
-								setCurrentIndex(index);
-							}
+							transitionRef.current.animateNextTransition();
+							setCurrentIndex(index === currentIndex ? null : index);
 						}} 
 						style={styles.cardContainer}
 						activeOpacity={0.9}
@@ -40,7 +51,7 @@ export default function App() {
 					</TouchableOpacity>
 				)
 			})}
-		</View>
+		</Transitioning.View>
 	);
 }
 
@@ -68,5 +79,8 @@ const styles = StyleSheet.create({
 		fontSize: 20,
 		lineHeight: 20 * 1.5,
 		textAlign: 'center'
+	},
+	subCategoriesList: {
+		marginTop: 20
 	}
 });

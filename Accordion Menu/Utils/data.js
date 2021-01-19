@@ -51,14 +51,12 @@ export default [
         color: '#ff6500',
         category: 'Homeware',
         subCategories: [
-            'Fruits and Vegetables',
-            'Frozen food',
-            'Bakery',
-            'Snacks & Desserts',
-            'Beverages',
-            'Alcoholic beverages',
-            'Noodles & Pasta',
-            'Rice & Cooking oil'
+            'Air purifiers',
+            'Stoves, Hoods & Ovens',
+            'Refrigerators',
+            'Coffee & Tea',
+            'Air conditioning',
+            'Tables',
         ],
     }
 ]

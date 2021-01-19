@@ -33,7 +33,7 @@ export default [
     },
     {
         bg: '#89cff0',
-        color: '#f0aa89',
+        color: '#e6e600',
         category: 'Baby & Kids',
         subCategories: [
             'Toys',

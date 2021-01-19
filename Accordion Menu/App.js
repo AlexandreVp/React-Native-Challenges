@@ -1,27 +1,22 @@
+// 
+
+
 import React, { useRef, useState } from 'react';
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { Transitioning, Transition } from 'react-native-reanimated';
+import { StyleSheet, Text, TouchableOpacity, View, LayoutAnimation, UIManager, Platform } from 'react-native';
 
 import data from './Utils/data';
 
-const transition = (
-	<Transition.Together>
-		<Transition.In type='fade' durationMs={200}/>
-		<Transition.Change  />
-		<Transition.Out type='fade' durationMs={200}/>
-	</Transition.Together>
-)
+if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
+	UIManager.setLayoutAnimationEnabledExperimental(true);
+}
 
 export default function App() {
 
 	const [currentIndex, setCurrentIndex] = useState(null);
-	const transitionRef = useRef();
 
 	return (
-		<Transitioning.View
-			ref={transitionRef}
-			transition={transition}
+		<View
 			style={styles.container}
 		>
 			<StatusBar hidden />
@@ -30,7 +25,20 @@ export default function App() {
 					<TouchableOpacity 
 						key={category} 
 						onPress={() => {
-							transitionRef.current.animateNextTransition();
+							LayoutAnimation.configureNext({
+								duration: 400,
+								create: {
+									property: LayoutAnimation.Properties.opacity,
+									type: LayoutAnimation.Types.easeInEaseOut,
+								},
+								update: {
+									type: LayoutAnimation.Types.easeInEaseOut,
+								},
+								delete: {
+									property: LayoutAnimation.Properties.opacity,
+									type: LayoutAnimation.Types.easeInEaseOut,
+								}
+							})
 							setCurrentIndex(index === currentIndex ? null : index);
 						}} 
 						style={styles.cardContainer}
@@ -51,7 +59,7 @@ export default function App() {
 					</TouchableOpacity>
 				)
 			})}
-		</Transitioning.View>
+		</View>
 	);
 }
 

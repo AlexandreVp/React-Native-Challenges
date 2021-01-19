@@ -1,32 +1,41 @@
+import React, { useState } from 'react';
 import { StatusBar } from 'expo-status-bar';
-import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 import data from './Utils/data';
 
 export default function App() {
 
+	const [currentIndex, setCurrentIndex] = useState(null);
 
 	return (
 		<View style={styles.container}>
 			<StatusBar hidden />
-			{data.map(({bg, color, category, subCategories}) => {
+			{data.map(({bg, color, category, subCategories}, index) => {
 				return (
 					<TouchableOpacity 
 						key={category} 
-						onPress={() => {}} 
+						onPress={() => {
+							if (index === currentIndex) {
+								setCurrentIndex(null);
+							} else {
+								setCurrentIndex(index);
+							}
+						}} 
 						style={styles.cardContainer}
 						activeOpacity={0.9}
 					>
 						<View style={[styles.card, { backgroundColor: bg }]}>
 							<Text style={[styles.heading, { color: color }]}>{category}</Text>
-							<View style={styles.subCategoriesList}>
-								{subCategories.map(subCategory => {
-									return (
-										<Text key={subCategory} style={[styles.subCategory, { color }]}>{subCategory}</Text>
-									)
-								})}
-							</View>
+							{index === currentIndex && 
+								<View style={styles.subCategoriesList}>
+									{subCategories.map(subCategory => {
+										return (
+											<Text key={subCategory} style={[styles.subCategory, { color }]}>{subCategory}</Text>
+										)
+									})}
+								</View>
+							}
 						</View>
 					</TouchableOpacity>
 				)

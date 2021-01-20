@@ -1,5 +1,5 @@
 import React from 'react';
-import { Image, FlatList, View, StatusBar, Dimensions, StyleSheet, SafeAreaView } from 'react-native';
+import { Image, FlatList, View, StatusBar, Dimensions, StyleSheet, SafeAreaView, Text } from 'react-native';
 import Animated, { 
     useSharedValue,
     useAnimatedScrollHandler,
@@ -7,6 +7,7 @@ import Animated, {
     interpolate,
     Extrapolate
 } from 'react-native-reanimated';
+import BottomSheet, { BottomSheetScrollView } from '@gorhom/bottom-sheet'
 
 const {width, height} = Dimensions.get('screen');
 
@@ -58,43 +59,90 @@ export default () => {
     });
 	
     return (
-		<SafeAreaView>
+		<SafeAreaView style={styles.container}>
 			<StatusBar hidden/>
-            <AnimatedFlatList
-                data={images}
-                style={styles.flatlistWrapper}
-                keyExtractor={(_, index) => index.toString()}
-                renderItem={(item) => {
-                    return (
-                        <View>
-                            <Image source={{ uri: item.item }} style={styles.image} resizeMode='cover' />
-                        </View>
-                    )
-                }}
-                onScroll={onScrollEvent}
-                snapToInterval={ITEM_HEIGHT}
-                decelerationRate='fast'
-                showsVerticalScrollIndicator={false}
-                bounces={false}
-            />
-            <View style={styles.pagination}>
-                {images.map((_, index) => {
-                    return (
-                        <View 
-                            key={index.toString()}
-                            style={styles.dot}
-                        />
-                    )
-                })}
-                <Animated.View
-                    style={[styles.dotIndicator, dotIndicatorStyle]}
+            <View style={styles.flatlistWrapper}>
+                <AnimatedFlatList
+                    data={images}
+                    keyExtractor={(_, index) => index.toString()}
+                    renderItem={(item) => {
+                        return (
+                            <View>
+                                <Image source={{ uri: item.item }} style={styles.image} resizeMode='cover' />
+                            </View>
+                        )
+                    }}
+                    onScroll={onScrollEvent}
+                    snapToInterval={ITEM_HEIGHT}
+                    decelerationRate='fast'
+                    showsVerticalScrollIndicator={false}
+                    bounces={false}
                 />
+                <View style={styles.pagination}>
+                    {images.map((_, index) => {
+                        return (
+                            <View 
+                                key={index.toString()}
+                                style={styles.dot}
+                            />
+                        )
+                    })}
+                    <Animated.View
+                        style={[styles.dotIndicator, dotIndicatorStyle]}
+                    />
+                </View>
             </View>
+            <BottomSheet
+                snapPoints={[height - ITEM_HEIGHT, height/1.25]}
+            >
+                <BottomSheetScrollView style={{ backgroundColor: 'white' }} contentContainerStyle={styles.productBodyWrapper}>
+                    <Text style={styles.productTitle}>{product.title}</Text>
+                    <Text style={styles.productPrice}>{product.price}</Text>
+                    <View style={styles.productDescriptionWrapper}>
+                        {product.description.map((text, index) => {
+                            return (
+                                <Text style={styles.productDrescription} key={index.toString()}>{text}</Text>
+                            )
+                        })}
+                    </View>
+                    <View style={styles.productDescriptionWrapper}>
+                        {product.description.map((text, index) => {
+                            return (
+                                <Text style={styles.productDrescription} key={index.toString()}>{text}</Text>
+                            )
+                        })}
+                    </View>
+                    <View style={styles.productDescriptionWrapper}>
+                        {product.description.map((text, index) => {
+                            return (
+                                <Text style={styles.productDrescription} key={index.toString()}>{text}</Text>
+                            )
+                        })}
+                    </View>
+                    <View style={styles.productDescriptionWrapper}>
+                        {product.description.map((text, index) => {
+                            return (
+                                <Text style={styles.productDrescription} key={index.toString()}>{text}</Text>
+                            )
+                        })}
+                    </View>
+                    <View style={styles.productDescriptionWrapper}>
+                        {product.description.map((text, index) => {
+                            return (
+                                <Text style={styles.productDrescription} key={index.toString()}>{text}</Text>
+                            )
+                        })}
+                    </View>
+                </BottomSheetScrollView>
+            </BottomSheet>
 		</SafeAreaView>
 	)
 }
 
 const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+    },
     image: {
         width: ITEM_WIDTH,
         height: ITEM_HEIGHT,
@@ -124,5 +172,25 @@ const styles = StyleSheet.create({
         borderColor: '#333',
         position: 'absolute',
         top: -DOT_SIZE/2,
+    },
+    productBodyWrapper: {
+        paddingHorizontal: 20,
+        paddingVertical: 10
+    },
+    productTitle: {
+        fontWeight: 'bold',
+        fontSize: 16,
+        textTransform: 'uppercase',
+    },
+    productPrice: {
+        fontSize: 16,
+        marginTop: 5,
+    },
+    productDescriptionWrapper: {
+        paddingVertical: 10
+    },
+    productDrescription: {
+        marginBottom: 3,
+        lineHeight: 22
     }
 })

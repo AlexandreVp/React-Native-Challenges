@@ -1,6 +1,12 @@
 import React from 'react';
 import { Image, FlatList, View, StatusBar, Dimensions, StyleSheet, SafeAreaView } from 'react-native';
-import Animated, { useSharedValue, useAnimatedScrollHandler } from 'react-native-reanimated';
+import Animated, { 
+    useSharedValue,
+    useAnimatedScrollHandler,
+    useAnimatedStyle,
+    interpolate,
+    Extrapolate
+} from 'react-native-reanimated';
 
 const {width, height} = Dimensions.get('screen');
 
@@ -36,29 +42,41 @@ export default () => {
     const onScrollEvent = useAnimatedScrollHandler((event) => {
         scrollY.value = event.contentOffset.y;
     });
+
+    const dotIndicatorStyle = useAnimatedStyle(() => {
+        return {
+            transform: [
+                {
+                    translateY: interpolate(
+                        scrollY.value/ITEM_HEIGHT,
+                        [0, 1],
+                        [0, DOT_INDICATOR_SIZE]
+                    )
+                }
+            ]
+        };
+    });
 	
     return (
 		<SafeAreaView>
 			<StatusBar hidden/>
-            {/* <View style={styles.flatlistWrapper}> */}
-                <AnimatedFlatList
-                    data={images}
-                    style={styles.flatlistWrapper}
-                    keyExtractor={(_, index) => index.toString()}
-                    renderItem={(item) => {
-                        return (
-                            <View>
-                                <Image source={{ uri: item.item }} style={styles.image} resizeMode='cover' />
-                            </View>
-                        )
-                    }}
-                    onScroll={onScrollEvent}
-                    snapToInterval={ITEM_HEIGHT}
-                    decelerationRate='fast'
-                    showsVerticalScrollIndicator={false}
-                    bounces={false}
-                />
-            {/* </View> */}
+            <AnimatedFlatList
+                data={images}
+                style={styles.flatlistWrapper}
+                keyExtractor={(_, index) => index.toString()}
+                renderItem={(item) => {
+                    return (
+                        <View>
+                            <Image source={{ uri: item.item }} style={styles.image} resizeMode='cover' />
+                        </View>
+                    )
+                }}
+                onScroll={onScrollEvent}
+                snapToInterval={ITEM_HEIGHT}
+                decelerationRate='fast'
+                showsVerticalScrollIndicator={false}
+                bounces={false}
+            />
             <View style={styles.pagination}>
                 {images.map((_, index) => {
                     return (
@@ -68,8 +86,8 @@ export default () => {
                         />
                     )
                 })}
-                <View
-                    style={styles.dotIndicator}
+                <Animated.View
+                    style={[styles.dotIndicator, dotIndicatorStyle]}
                 />
             </View>
 		</SafeAreaView>

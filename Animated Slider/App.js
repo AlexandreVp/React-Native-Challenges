@@ -11,7 +11,7 @@ if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental
 	UIManager.setLayoutAnimationEnabledExperimental(true);
 }
 
-const Circle = ({ onPress, animatedValue, index }) => {
+const Circle = ({ onPress, animatedValue, index, icon }) => {
 
 	const containerBackgroundColorStyle = useAnimatedStyle(() => {
 		return {
@@ -27,7 +27,7 @@ const Circle = ({ onPress, animatedValue, index }) => {
 		return {
 			transform: [
 				{
-					perspective: 300
+					perspective: 200
 				},
 				{
 					rotateY: `${interpolate(
@@ -47,7 +47,7 @@ const Circle = ({ onPress, animatedValue, index }) => {
 					translateX: interpolate(
 						animatedValue.value,
 						[0, 0.5, 1],
-						[0, width/32, 0]
+						[0, width/48, 0] //perspective 400 = 16 ; perscpective 300 = 32 ; perscpective 200 = 48
 					)
 				}
 			],
@@ -83,7 +83,7 @@ const Circle = ({ onPress, animatedValue, index }) => {
 			<Animated.View style={[styles.circle, cicleStyle]}>
 				<TouchableOpacity disabled={index === 1 ? true : false} onPress={onPress}>
 					<Animated.View style={[styles.circleButton, circleButtonStyle]}>
-						<AntDesign name={index === 1 ? 'check' : 'arrowright'} size={28} color='white' />
+						<AntDesign name={icon} size={28} color='white' />
 					</Animated.View>
 				</TouchableOpacity>
 			</Animated.View>
@@ -95,6 +95,7 @@ export default () => {
 
 	const animatedValue = useSharedValue(0);
 	const [index, setIndex] = useState(0);
+	const [icon, setIcon] = useState('arrowright');
 
 	const animate = (toValue) => {
 		animatedValue.value =  withTiming(toValue, {
@@ -105,6 +106,7 @@ export default () => {
 			create: {
 				property: LayoutAnimation.Properties.opacity,
 				type: LayoutAnimation.Types.easeInEaseOut,
+				delay: 200,
 			},
 			update: {
 				type: LayoutAnimation.Types.easeInEaseOut,
@@ -115,6 +117,15 @@ export default () => {
 			},
 		});
 		setIndex(toValue);
+		if (toValue === 1) {
+			setTimeout(() => {
+				setIcon('check');
+			}, 750);
+		} else {
+			setTimeout(() => {
+				setIcon('arrowright');
+			}, 750);
+		}
 	};
 
 	const onPress = () => {
@@ -139,7 +150,7 @@ export default () => {
 	return (
 		<View style={styles.container}>
 			<StatusBar hidden />
-			<Circle onPress={onPress} animatedValue={animatedValue} index={index} />
+			<Circle onPress={onPress} animatedValue={animatedValue} index={index} icon={icon} />
 			{
 				index > 0 &&
 				<TouchableOpacity 

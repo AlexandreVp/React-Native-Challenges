@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "Animated Slider",
-    "slug": "animated-slider",
+    "name": "react-native-js",
+    "slug": "react-native-js",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",

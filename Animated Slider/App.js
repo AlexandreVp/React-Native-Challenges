@@ -27,7 +27,7 @@ const Circle = ({ onPress, animatedValue, index, icon }) => {
 		return {
 			transform: [
 				{
-					perspective: 100
+					perspective: 150
 				},
 				{
 					rotateY: `${interpolate(
@@ -47,7 +47,7 @@ const Circle = ({ onPress, animatedValue, index, icon }) => {
 					translateX: interpolate(
 						animatedValue.value,
 						[0, 0.5, 1],
-						[0, width/64, 0] //perspective 400 = 16 ; perscpective 300 = 32 ; perscpective 200 = 48
+						[0, width/56, 0] //perspective 400 = 16 ; perscpective 300 = 32 ; perscpective 200 = 48
 					)
 				}
 			],
@@ -99,10 +99,10 @@ export default () => {
 
 	const animate = (toValue) => {
 		animatedValue.value =  withTiming(toValue, {
-			duration: 1500,
+			duration: 2000,
 		});
 		LayoutAnimation.configureNext({
-			duration: 1700,
+			duration: 2200,
 			create: {
 				property: LayoutAnimation.Properties.opacity,
 				type: LayoutAnimation.Types.easeInEaseOut,

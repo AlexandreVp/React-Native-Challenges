@@ -27,7 +27,7 @@ const Circle = ({ onPress, animatedValue, index, icon }) => {
 		return {
 			transform: [
 				{
-					perspective: 200
+					perspective: 100
 				},
 				{
 					rotateY: `${interpolate(
@@ -47,7 +47,7 @@ const Circle = ({ onPress, animatedValue, index, icon }) => {
 					translateX: interpolate(
 						animatedValue.value,
 						[0, 0.5, 1],
-						[0, width/48, 0] //perspective 400 = 16 ; perscpective 300 = 32 ; perscpective 200 = 48
+						[0, width/64, 0] //perspective 400 = 16 ; perscpective 300 = 32 ; perscpective 200 = 48
 					)
 				}
 			],

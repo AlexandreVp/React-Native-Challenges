@@ -1,13 +1,25 @@
-import React from 'react';
-import { StatusBar, FlatList, Image, Animated, Text, View, Dimensions, StyleSheet, TouchableOpacity, Easing, SafeAreaViewBase, SafeAreaView } from 'react-native';
-import faker from 'faker'
+import React, { useRef } from 'react';
+import { 
+    StatusBar, 
+    FlatList, 
+    Image, 
+    Text, 
+    View, 
+    Dimensions, 
+    StyleSheet, 
+    SafeAreaView,
+    Animated
+} from 'react-native';
+import faker from 'faker';
 
 const { width, height } = Dimensions.get('screen');
 const SPACING = 20;
 const AVATAR_SIZE = 70;
+const BG_IMAGE = 'https://images.pexels.com/photos/1231265/pexels-photo-1231265.jpeg?auth';
+const ITEM_SIZE = AVATAR_SIZE + SPACING*3.18;
 
-faker.seed(10);
-const DATA = [...Array(30).keys()].map((_, i) => {
+faker.seed(12);
+const DATA = [...Array(20).keys()].map((_, i) => {
     return {
         key: faker.random.uuid(),
         image: `https://randomuser.me/api/portraits/${faker.helpers.randomize(['women', 'men'])}/${faker.random.number(60)}.jpg`,
@@ -16,9 +28,15 @@ const DATA = [...Array(30).keys()].map((_, i) => {
         email: faker.internet.email(),
     };
 });
-const BG_IMAGE = 'https://images.pexels.com/photos/1231265/pexels-photo-1231265.jpeg?auth';
 
 export default () => {
+
+    const scrollY = useRef(new Animated.Value(0)).current;
+
+    const onScroll = Animated.event(
+        [{ nativeEvent: { contentOffset: { y: scrollY } } }],
+        { useNativeDriver: true }
+    );
 	
     return (
 		<SafeAreaView style={{flex: 1, backgroundColor: '#fff'}}>
@@ -28,13 +46,32 @@ export default () => {
                 style={[StyleSheet.absoluteFillObject]}
                 blurRadius={50}
             />
-            <FlatList 
+            <Animated.FlatList
                 data={DATA}
+                onScroll={onScroll}
                 keyExtractor={item => item.key}
-                contentContainerStyle={{ padding: SPACING, paddingTop: StatusBar.currentHeight || 42 }}
+                scrollEventThrottle={24}
+                contentContainerStyle={{ paddingHorizontal: SPACING, paddingTop: StatusBar.currentHeight || 42 }}
                 renderItem={({item, index}) => {
+
+                    const scale = scrollY.interpolate({
+                        inputRange: [-1, 0, ITEM_SIZE*index, ITEM_SIZE*(index+2)],
+                        outputRange: [1, 1, 1, 0],
+                        extrapolate: 'clamp'
+                    });
+
+                    const opacity = scrollY.interpolate({
+                        inputRange: [-1, 0, ITEM_SIZE*index, ITEM_SIZE*(index+1)],
+                        outputRange: [1, 1, 1, 0],
+                        extrapolate: 'clamp'
+                    })
+
+                    const transform = [
+                        { scale: scale }
+                    ];
+
                     return (
-                        <View style={styles.profileWrapper}>
+                        <Animated.View style={[styles.profileWrapper, { transform, opacity }]}>
                             <Image 
                                 source={{ uri: item.image }}
                                 style={styles.avatar}
@@ -44,7 +81,7 @@ export default () => {
                                 <Text style={styles.jobTitle}>{item.jobTitle}</Text>
                                 <Text style={styles.email}>{item.email}</Text>
                             </View>
-                        </View>
+                        </Animated.View>
                     )
                 }}
             />
@@ -67,7 +104,7 @@ const styles = StyleSheet.create({
         },
         shadowOpacity: 0.3,
         shadowRadius: 20,
-        elevation: 5
+        elevation: 5,
     },
     avatar: {
         width: AVATAR_SIZE,
@@ -82,6 +119,7 @@ const styles = StyleSheet.create({
     jobTitle: {
         fontSize: 18,
         opacity: .7,
+        flexWrap: 'wrap'
     },
     email: {
         fontSize: 14,

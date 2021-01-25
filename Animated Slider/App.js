@@ -1,11 +1,22 @@
 import React, { useState } from 'react';
 import { StatusBar } from 'expo-status-bar';
-import { View, StyleSheet, TouchableOpacity, Dimensions, Text, LayoutAnimation, UIManager, Platform } from 'react-native';
+import { 
+	View, 
+	StyleSheet, 
+	TouchableOpacity, 
+	Dimensions, 
+	Text, 
+	LayoutAnimation, 
+	UIManager, 
+	Platform,
+	SafeAreaView
+} from 'react-native';
 import { AntDesign } from '@expo/vector-icons';
 import Animated, { useSharedValue, withTiming, useAnimatedStyle, interpolate, runOnJS, interpolateColor } from 'react-native-reanimated';
 
 const { width } = Dimensions.get('window');
 const CIRCLE_SIZE = 100;
+const DURATION = 1500;
 
 if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
 	UIManager.setLayoutAnimationEnabledExperimental(true);
@@ -27,7 +38,7 @@ const Circle = ({ onPress, animatedValue, index, icon }) => {
 		return {
 			transform: [
 				{
-					perspective: 150
+					perspective: 200
 				},
 				{
 					rotateY: `${interpolate(
@@ -47,7 +58,7 @@ const Circle = ({ onPress, animatedValue, index, icon }) => {
 					translateX: interpolate(
 						animatedValue.value,
 						[0, 0.5, 1],
-						[0, width/56, 0] //perspective 400 = 16 ; perscpective 300 = 32 ; perscpective 200 = 48
+						[0, width/48, 0] //perspective 400 = 16 ; perscpective 300 = 32 ; perscpective 200 = 48
 					)
 				}
 			],
@@ -79,7 +90,7 @@ const Circle = ({ onPress, animatedValue, index, icon }) => {
 	});
 
 	return (
-		<Animated.View style={[StyleSheet.absoluteFillObject, styles.circleContainer, containerBackgroundColorStyle]}>
+		<Animated.View style={[styles.circleContainer, containerBackgroundColorStyle]}>
 			<Animated.View style={[styles.circle, cicleStyle]}>
 				<TouchableOpacity disabled={index === 1 ? true : false} onPress={onPress}>
 					<Animated.View style={[styles.circleButton, circleButtonStyle]}>
@@ -99,14 +110,14 @@ export default () => {
 
 	const animate = (toValue) => {
 		animatedValue.value =  withTiming(toValue, {
-			duration: 2000,
+			duration: DURATION,
 		});
 		LayoutAnimation.configureNext({
-			duration: 2200,
+			duration: 300,
 			create: {
 				property: LayoutAnimation.Properties.opacity,
 				type: LayoutAnimation.Types.easeInEaseOut,
-				delay: 200,
+				delay: DURATION - 200,
 			},
 			update: {
 				type: LayoutAnimation.Types.easeInEaseOut,
@@ -120,11 +131,11 @@ export default () => {
 		if (toValue === 1) {
 			setTimeout(() => {
 				setIcon('check');
-			}, 750);
+			}, DURATION/2);
 		} else {
 			setTimeout(() => {
 				setIcon('arrowright');
-			}, 750);
+			}, DURATION/2);
 		}
 	};
 
@@ -148,7 +159,7 @@ export default () => {
 	});
 
 	return (
-		<View style={styles.container}>
+		<SafeAreaView style={styles.container}>
 			<StatusBar hidden />
 			<Circle onPress={onPress} animatedValue={animatedValue} index={index} icon={icon} />
 			{
@@ -160,7 +171,7 @@ export default () => {
 					<Animated.Text style={[styles.goBackText, textStyle]}>Go back</Animated.Text>
 				</TouchableOpacity>
 			}
-		</View>
+		</SafeAreaView>
 	);
 }
 
@@ -173,8 +184,8 @@ const styles = StyleSheet.create({
 		flex: 1,
 		justifyContent: 'flex-end',
 		alignItems: 'center',
-		padding: 8,
 		paddingBottom: 100,
+		
 	},
 	circle: {
 		width: CIRCLE_SIZE,

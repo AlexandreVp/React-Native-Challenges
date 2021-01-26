@@ -16,11 +16,13 @@ import Animated, { useSharedValue, withTiming, useAnimatedStyle, interpolate, ru
 
 const { width } = Dimensions.get('window');
 const CIRCLE_SIZE = 100;
-const DURATION = 1500;
+const DURATION = 1200;
+const LENGHT = 5;
 
 if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
 	UIManager.setLayoutAnimationEnabledExperimental(true);
 }
+
 
 const Circle = ({ onPress, animatedValue, index, icon }) => {
 
@@ -29,7 +31,7 @@ const Circle = ({ onPress, animatedValue, index, icon }) => {
 			backgroundColor: interpolateColor(
 				animatedValue.value,
 				[0, 0.001, 0.5, 0.501, 1],
-				['gold', 'gold', 'gold', '#444', '#444']
+				['gold', 'gold', 'gold', '#444', '#444'],
 			)
 		};
 	});
@@ -90,9 +92,9 @@ const Circle = ({ onPress, animatedValue, index, icon }) => {
 	});
 
 	return (
-		<Animated.View style={[styles.circleContainer, containerBackgroundColorStyle]}>
+		<Animated.View style={[StyleSheet.absoluteFillObject, styles.circleContainer, containerBackgroundColorStyle]}>
 			<Animated.View style={[styles.circle, cicleStyle]}>
-				<TouchableOpacity disabled={index === 1 ? true : false} onPress={onPress}>
+				<TouchableOpacity disabled={index === LENGHT ? true : false} onPress={onPress}>
 					<Animated.View style={[styles.circleButton, circleButtonStyle]}>
 						<AntDesign name={icon} size={28} color='white' />
 					</Animated.View>
@@ -108,7 +110,7 @@ export default () => {
 	const [index, setIndex] = useState(0);
 	const [icon, setIcon] = useState('arrowright');
 
-	const animate = (toValue) => {
+	const animate = (i, toValue = 1) => {
 		animatedValue.value =  withTiming(toValue, {
 			duration: DURATION,
 		});
@@ -127,8 +129,8 @@ export default () => {
 				type: LayoutAnimation.Types.easeInEaseOut,
 			},
 		});
-		setIndex(toValue);
-		if (toValue === 1) {
+		setIndex(i);
+		if (i === LENGHT) {
 			setTimeout(() => {
 				setIcon('check');
 			}, DURATION/2);
@@ -140,7 +142,13 @@ export default () => {
 	};
 
 	const onPress = () => {
-		animate(index === 0 ? 1 : 0);
+		animatedValue.value = 0;
+		animate(index + 1);
+	};
+
+	const onPressGoBack = () => {
+		animatedValue.value = 1;
+		animate(index - 1, 0);
 	};
 
 	const textStyle = useAnimatedStyle(() => {
@@ -165,7 +173,7 @@ export default () => {
 			{
 				index > 0 &&
 				<TouchableOpacity 
-					onPress={onPress} 
+					onPress={onPressGoBack} 
 					style={[styles.backButtonWrapper]}
 				>
 					<Animated.Text style={[styles.goBackText, textStyle]}>Go back</Animated.Text>
@@ -181,11 +189,9 @@ const styles = StyleSheet.create({
 		justifyContent: 'flex-start'
 	},
 	circleContainer: {
-		flex: 1,
 		justifyContent: 'flex-end',
 		alignItems: 'center',
 		paddingBottom: 100,
-		
 	},
 	circle: {
 		width: CIRCLE_SIZE,
@@ -195,6 +201,9 @@ const styles = StyleSheet.create({
 		alignItems: 'center',
 	},
 	circleButton: {
+		width: CIRCLE_SIZE,
+		height: CIRCLE_SIZE,
+		borderRadius: CIRCLE_SIZE/2,
 		backgroundColor: 'transparent',
 		justifyContent: 'center',
 		alignItems: 'center',

@@ -16,22 +16,41 @@ import Animated, { useSharedValue, withTiming, useAnimatedStyle, interpolate, ru
 
 const { width } = Dimensions.get('window');
 const CIRCLE_SIZE = 100;
-const DURATION = 1200;
-const LENGHT = 5;
+const DURATION = 1400;
+const DOT_PADDING_BOTTOM = 75;
+const LENGHT = 3;	// >= 2
 
 if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
 	UIManager.setLayoutAnimationEnabledExperimental(true);
 }
 
+// [0, 0.5, 0.501, 1]
+	// ['gold', 'gold', 'black', 'black']
+	// ['black', 'black', 'gold', 'gold']
+
+// icon colors
+	// ['gold', 'black', 'gold']
+
+// [0, 0.5, 1]
+	// [0, -90, -180]
+	// [1, 8, 1]				mantém
+	// [0, width/48, 0]			mantém
+	// [0, 180, 180]
+
+// [0, 0.2, 0.8, 1]
+	// [1, 0, 0, 1]
+
 
 const Circle = ({ onPress, animatedValue, index, icon }) => {
+
+	const iconColors = ['gold', 'black', 'gold'];
 
 	const containerBackgroundColorStyle = useAnimatedStyle(() => {
 		return {
 			backgroundColor: interpolateColor(
 				animatedValue.value,
-				[0, 0.001, 0.5, 0.501, 1],
-				['gold', 'gold', 'gold', '#444', '#444'],
+				[0, 0.5, 0.501, 1, 1, 1.5, 1.501, 2],
+				['gold', 'gold', 'black', 'black', 'black', 'black', 'gold', 'gold'],
 			)
 		};
 	});
@@ -45,29 +64,29 @@ const Circle = ({ onPress, animatedValue, index, icon }) => {
 				{
 					rotateY: `${interpolate(
 						animatedValue.value,
-						[0, 0.5, 1],
-						[0, -90, -180]
+						[0, 0.5, 1, 1, 1.5, 2],
+						[0, -90, -180, -180, -270, -360]
 					)}deg`
 				},
 				{
 					scale: interpolate(
 						animatedValue.value,
-						[0, 0.5, 1],
-						[1, 8, 1]
+						[0, 0.5, 1, 1, 1.5, 2],
+						[1, 8, 1, 1, 8, 1]
 					)
 				},
 				{
 					translateX: interpolate(
 						animatedValue.value,
-						[0, 0.5, 1],
-						[0, width/48, 0] //perspective 400 = 16 ; perscpective 300 = 32 ; perscpective 200 = 48
+						[0, 0.5, 1, 1, 1.5, 2],
+						[0, width/48, 0, 0, width/48, 0] //perspective 400 = 16 ; perscpective 300 = 32 ; perscpective 200 = 48
 					)
 				}
 			],
 			backgroundColor: interpolateColor(
 				animatedValue.value,
-				[0, 0.001, 0.5, 0.501, 1],
-				['#444', '#444', '#444', 'gold', 'gold']
+				[0, 0.5, 0.501, 1, 1, 1.5, 1.501, 2],
+				['black', 'black', 'gold', 'gold', 'gold', 'gold', 'black', 'black']
 			)
 		};
 	});
@@ -78,15 +97,15 @@ const Circle = ({ onPress, animatedValue, index, icon }) => {
 				{
 					rotateY: `${interpolate(
 						animatedValue.value,
-						[0, 0.5, 1],
-						[0, 180, 180]
+						[0, 0.5, 1, 1, 1.5, 2],
+						[0, 180, 180, 180, 360, 360]
 					)}deg`
 				},
 			],
 			opacity: interpolate(
 				animatedValue.value,
-				[0, 0.3, 0.5, 0.7, 1],
-				[1, 0, 0, 0, 1]
+				[0, 0.2, 0.8, 1, 1, 1.2, 1.8, 2],
+				[1, 0, 0, 1, 1, 0, 0, 1]
 			)
 		};
 	});
@@ -94,9 +113,9 @@ const Circle = ({ onPress, animatedValue, index, icon }) => {
 	return (
 		<Animated.View style={[StyleSheet.absoluteFillObject, styles.circleContainer, containerBackgroundColorStyle]}>
 			<Animated.View style={[styles.circle, cicleStyle]}>
-				<TouchableOpacity disabled={index === LENGHT ? true : false} onPress={onPress}>
+				<TouchableOpacity disabled={index == (LENGHT-1) ? true : false} onPress={onPress}>
 					<Animated.View style={[styles.circleButton, circleButtonStyle]}>
-						<AntDesign name={icon} size={28} color='white' />
+						<AntDesign name={icon} size={28} color={iconColors[index]} />
 					</Animated.View>
 				</TouchableOpacity>
 			</Animated.View>
@@ -109,9 +128,10 @@ export default () => {
 	const animatedValue = useSharedValue(0);
 	const [index, setIndex] = useState(0);
 	const [icon, setIcon] = useState('arrowright');
+	const [disabled, setDisabled] = useState(false);
 
-	const animate = (i, toValue = 1) => {
-		animatedValue.value =  withTiming(toValue, {
+	const animate = (i) => {
+		animatedValue.value =  withTiming(i, {
 			duration: DURATION,
 		});
 		LayoutAnimation.configureNext({
@@ -130,7 +150,8 @@ export default () => {
 			},
 		});
 		setIndex(i);
-		if (i === LENGHT) {
+
+		if (i == (LENGHT-1)) {
 			setTimeout(() => {
 				setIcon('check');
 			}, DURATION/2);
@@ -142,26 +163,24 @@ export default () => {
 	};
 
 	const onPress = () => {
-		animatedValue.value = 0;
 		animate(index + 1);
 	};
 
 	const onPressGoBack = () => {
-		animatedValue.value = 1;
-		animate(index - 1, 0);
+		animate(index - 1);
 	};
 
 	const textStyle = useAnimatedStyle(() => {
 		return {
 			color: interpolateColor(
 				animatedValue.value,
-				[0, 0.001, 0.5, 0.501, 1],
-				['#444', '#444', '#444', 'gold', 'gold']
+				[0, 0.5, 0.501, 1, 1, 1.5, 1.501, 2],
+				['black', 'black', 'gold', 'gold', 'gold', 'black', 'black', 'black']
 			),
 			opacity: interpolate(
 				animatedValue.value,
-				[0, 0.2, 0.5, 0.8, 1],
-				[1, 0, 0, 0, 1]
+				[0, 0.5, 0.8, 1, 1, 1.5, 1.8, 2],
+				[1, 0, 0, 1, 1, 0, 0, 1]
 			)
 		};
 	});
@@ -191,7 +210,7 @@ const styles = StyleSheet.create({
 	circleContainer: {
 		justifyContent: 'flex-end',
 		alignItems: 'center',
-		paddingBottom: 100,
+		paddingBottom: DOT_PADDING_BOTTOM,
 	},
 	circle: {
 		width: CIRCLE_SIZE,
@@ -216,78 +235,6 @@ const styles = StyleSheet.create({
 		position: 'absolute',
 		alignSelf: 'center',
 		justifyContent: 'center',
-		bottom: 50
+		bottom: DOT_PADDING_BOTTOM/2,
 	}
 });
-
-const quotes = [
-	{
-		quote: 'For the things we have to learn before we can do them, we learn by doing them.',
-		author: 'Aristotle, The Nicomachean Ethics',
-	},
-	{
-		quote: 'The fastest way to build an app.',
-		author: 'The Expo Team',
-	},
-	{
-		quote: 'The greatest glory in living lies not in never falling, but in rising every time we fall.',
-		author: 'Nelson Mandela',
-	},
-	{
-		quote: 'The way to get started is to quit talking and begin doing.',
-		author: 'Walt Disney',
-	},
-	{
-		quote: "Your time is limited, so don't waste it living someone else's life. Don't be trapped by dogma – which is living with the results of other people's thinking.",
-		author: 'Steve Jobs',
-	},
-	{
-		quote: 'If life were predictable it would cease to be life, and be without flavor.',
-		author: 'Eleanor Roosevelt',
-	},
-	{
-		quote: "If you look at what you have in life, you'll always have more. If you look at what you don't have in life, you'll never have enough.",
-		author: 'Oprah Winfrey',
-	},
-	{
-		quote: "If you set your goals ridiculously high and it's a failure, you will fail above everyone else's success.",
-		author: 'James Cameron',
-	},
-	{
-		quote: "Life is what happens when you're busy making other plans.",
-		author: 'John Lennon',
-	},
-];
-
-const colors = [
-	{
-		initialBgColor: 'goldenrod',
-		bgColor: '#222',
-		nextBgColor: '#222',
-	},
-	{
-		initialBgColor: 'goldenrod',
-		bgColor: '#222',
-		nextBgColor: 'yellowgreen',
-	},
-	{
-		initialBgColor: '#222',
-		bgColor: 'yellowgreen',
-		nextBgColor: 'midnightblue',
-	},
-	{
-		initialBgColor: 'yellowgreen',
-		bgColor: 'midnightblue',
-		nextBgColor: 'turquoise',
-	},
-	{
-		initialBgColor: 'midnightblue',
-		bgColor: 'turquoise',
-		nextBgColor: 'goldenrod',
-	},
-	{
-		initialBgColor: 'turquoise',
-		bgColor: 'goldenrod',
-		nextBgColor: '#222',
-	},
-];

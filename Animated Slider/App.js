@@ -18,7 +18,7 @@ const { width } = Dimensions.get('window');
 const CIRCLE_SIZE = 100;
 const DURATION = 1400;
 const DOT_PADDING_BOTTOM = 75;
-const LENGHT = 3;	// >= 2
+const SCREENS = 3;	// >= 2 (number of screens to animate)
 
 if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
 	UIManager.setLayoutAnimationEnabledExperimental(true);
@@ -113,7 +113,7 @@ const Circle = ({ onPress, animatedValue, index, icon }) => {
 	return (
 		<Animated.View style={[StyleSheet.absoluteFillObject, styles.circleContainer, containerBackgroundColorStyle]}>
 			<Animated.View style={[styles.circle, cicleStyle]}>
-				<TouchableOpacity disabled={index == (LENGHT-1) ? true : false} onPress={onPress}>
+				<TouchableOpacity disabled={index == (SCREENS-1) ? true : false} onPress={onPress}>
 					<Animated.View style={[styles.circleButton, circleButtonStyle]}>
 						<AntDesign name={icon} size={28} color={iconColors[index]} />
 					</Animated.View>
@@ -151,7 +151,7 @@ export default () => {
 		});
 		setIndex(i);
 
-		if (i == (LENGHT-1)) {
+		if (i == (SCREENS-1)) {
 			setTimeout(() => {
 				setIcon('check');
 			}, DURATION/2);

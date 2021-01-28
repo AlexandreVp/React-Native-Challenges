@@ -24,9 +24,9 @@ if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental
 	UIManager.setLayoutAnimationEnabledExperimental(true);
 }
 
-// [0, 0.5, 0.501, 1]
+// [0, 0.5, 0.501, 1]													
 	// ['gold', 'gold', 'black', 'black']
-	// ['black', 'black', 'gold', 'gold']
+	// ['black', 'black', 'gold', 'gold']	usar o reverse()
 
 // icon colors
 	// ['gold', 'black', 'gold']

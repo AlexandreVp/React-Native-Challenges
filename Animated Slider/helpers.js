@@ -14,3 +14,18 @@ export const bgColorInput = (screens) => {
         return baseInput;
     }
 };
+
+export const bgColorOutput = (colors) => {
+    let bgColors = [];
+
+    while(colors.length > 1) {
+        bgColors.push(colors[0]);
+        bgColors.push(colors[0]);
+        bgColors.push(colors[1]);
+        bgColors.push(colors[1]);
+
+        colors.shift();
+    }
+
+    return bgColors;
+};

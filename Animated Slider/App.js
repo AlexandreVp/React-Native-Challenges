@@ -33,8 +33,8 @@ if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental
 
 // [0, 0.5, 1]																	done
 	// [0, -90, -180]															done
-	// [1, 8, 1]				mantém
-	// [0, width/48, 0]			mantém
+	// [1, 8, 1]				mantém											done
+	// [0, width/48, 0]			mantém											done
 	// [0, 180, 180]
 
 // [0, 0.2, 0.8, 1]

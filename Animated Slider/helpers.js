@@ -1,3 +1,7 @@
+import { Dimensions } from 'react-native';
+
+const { width } = Dimensions.get('window');
+
 export const bgColorInput = (screens) => {
     let baseInput = [];
 
@@ -38,7 +42,7 @@ export const transformInput = (screens) => {
     return baseInput;
 }
 
-export const rotateY_CircleInput = (screens) => {
+export const rotateY_CircleOutput = (screens) => {
     let baseInput = [];
     let deg = 0;
 
@@ -48,6 +52,46 @@ export const rotateY_CircleInput = (screens) => {
         baseInput.push(deg-180);
 
         deg = baseInput[i*3 + 2];
+    }
+
+    return baseInput;
+}
+
+export const scale_CircleOutput = (screens) => {
+    let baseInput = [];
+
+    for (let i = 0; i < screens - 1; i++) {
+        baseInput.push(1);
+        baseInput.push(8);
+        baseInput.push(1);
+    }
+
+    return baseInput;
+}
+
+export const translateX_CircleOutput = (screens, perspective) => {
+    let baseInput = [];
+    let adjustment;
+
+    switch (perspective) {
+        case 150:
+            adjustment = 56;
+            break;
+        case 200:
+            adjustment = 48;
+            break;
+        case 300:
+            adjustment = 32;
+            break;
+        case 400:
+            adjustment = 16;
+            break;
+    }
+
+    for (let i = 0; i < screens - 1; i++) {
+        baseInput.push(0);
+        baseInput.push(width/adjustment);
+        baseInput.push(0);
     }
 
     return baseInput;

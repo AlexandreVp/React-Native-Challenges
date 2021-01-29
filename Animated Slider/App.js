@@ -55,7 +55,7 @@ const Circle = ({ onPress, animatedValue, index, icon }) => {
 		};
 	});
 
-	const cicleStyle = useAnimatedStyle(() => {
+	const circleStyle = useAnimatedStyle(() => {
 		return {
 			transform: [
 				{
@@ -112,7 +112,7 @@ const Circle = ({ onPress, animatedValue, index, icon }) => {
 
 	return (
 		<Animated.View style={[StyleSheet.absoluteFillObject, styles.circleContainer, containerBackgroundColorStyle]}>
-			<Animated.View style={[styles.circle, cicleStyle]}>
+			<Animated.View style={[styles.circle, circleStyle]}>
 				<TouchableOpacity disabled={index == (SCREENS-1) ? true : false} onPress={onPress}>
 					<Animated.View style={[styles.circleButton, circleButtonStyle]}>
 						<AntDesign name={icon} size={28} color={iconColors[index]} />

@@ -24,15 +24,15 @@ if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental
 	UIManager.setLayoutAnimationEnabledExperimental(true);
 }
 
-// [0, 0.5, 0.501, 1]													
-	// ['gold', 'gold', 'black', 'black']
-	// ['black', 'black', 'gold', 'gold']	usar o reverse()
+// [0, 0.5, 0.501, 1]															done
+	// ['gold', 'gold', 'black', 'black']										done
+	// ['black', 'black', 'gold', 'gold']	usar o reverse()					done
 
 // icon colors
-	// ['gold', 'black', 'gold']
+	// ['gold', 'black', 'gold']												done
 
-// [0, 0.5, 1]
-	// [0, -90, -180]
+// [0, 0.5, 1]																	done
+	// [0, -90, -180]															done
 	// [1, 8, 1]				mantém
 	// [0, width/48, 0]			mantém
 	// [0, 180, 180]

@@ -37,3 +37,18 @@ export const transformInput = (screens) => {
 
     return baseInput;
 }
+
+export const rotateY_CircleInput = (screens) => {
+    let baseInput = [];
+    let deg = 0;
+
+    for (let i = 0; i < screens - 1; i++) {
+        baseInput.push(deg);
+        baseInput.push(deg-90);
+        baseInput.push(deg-180);
+
+        deg = baseInput[i*3 + 2];
+    }
+
+    return baseInput;
+}

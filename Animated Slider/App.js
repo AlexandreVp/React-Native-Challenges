@@ -35,10 +35,10 @@ if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental
 	// [0, -90, -180]															done
 	// [1, 8, 1]				mantém											done
 	// [0, width/48, 0]			mantém											done
-	// [0, 180, 180]
+	// [0, 180, 180]															done
 
-// [0, 0.2, 0.8, 1]
-	// [1, 0, 0, 1]
+// [0, 0.2, 0.8, 1]																done
+	// [1, 0, 0, 1]																done
 
 
 const Circle = ({ onPress, animatedValue, index, icon }) => {
@@ -175,7 +175,7 @@ export default () => {
 			color: interpolateColor(
 				animatedValue.value,
 				[0, 0.5, 0.501, 1, 1, 1.5, 1.501, 2],
-				['black', 'black', 'gold', 'gold', 'gold', 'black', 'black', 'black']
+				['black', 'black', 'gold', 'gold', 'gold', 'gold', 'black', 'black']
 			),
 			opacity: interpolate(
 				animatedValue.value,

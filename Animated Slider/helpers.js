@@ -96,3 +96,41 @@ export const translateX_CircleOutput = (screens, perspective) => {
 
     return baseInput;
 }
+export const rotateY_CircleButtonOutput = (screens) => {
+    let baseInput = [];
+    let baseValue = 180;
+
+    for (let i = 0; i < screens - 1; i++) {
+        baseInput.push(i*baseValue);
+        baseInput.push((i+1)*baseValue);
+        baseInput.push((i+1)*baseValue);
+    }
+
+    return baseInput;
+}
+
+export const textOpacityInput = (screens) => {
+    let baseInput = [];
+
+    for (let i = 0; i < screens - 1; i++) {
+        baseInput.push(1);
+        baseInput.push(0);
+        baseInput.push(0);
+        baseInput.push(1);
+    }
+
+    return baseInput;
+}
+
+export const textOpacityOutput = (screens) => {
+    let baseInput = [];
+
+    for (let i = 0; i < screens - 1; i++) {
+        baseInput.push(i);
+        baseInput.push(i+0.5);
+        baseInput.push(i+0.8);
+        baseInput.push(i+1);
+    }
+
+    return baseInput;
+}

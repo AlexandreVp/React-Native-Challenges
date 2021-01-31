@@ -24,8 +24,8 @@ const SCREENS = 5;	// >= 2 (number of screens to animate)
 
 //ANIMATED CONFIGS:
 const PERSPECTIVE = 200;	// 100, 150, 200, 300, 400
-const SCREEN_COLORS = ['gold', '#222', 'gold', '#222', 'gold'];
-const SCREEN_COLORS_REVERSE = ['#222', 'gold', '#222', 'gold', '#222'];
+const SCREEN_COLORS = ['#FF7F00','#FFFFFF','#FF7F00','#FFFFFF','#FF7F00'];
+const SCREEN_COLORS_REVERSE = ['#FFFFFF','#FF7F00','#FFFFFF','#FF7F00','#FFFFFF'];
 const BG_COLOR_INPUT = bgColorInput(SCREENS);
 const BG_COLOR_OUTPUT = bgColorOutput(SCREEN_COLORS);
 const BG_COLOR_OUTPUT_REVERSE = bgColorOutput(SCREEN_COLORS_REVERSE);
@@ -44,6 +44,8 @@ if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental
 }
 
 const Circle = ({ onPress, animatedValue, index, icon }) => {
+
+	let colors = ['#FF7F00','#FFFFFF','#FF7F00','#FFFFFF','#FF7F00'];
 
 	const containerBackgroundColorStyle = useAnimatedStyle(() => {
 		return {
@@ -115,7 +117,7 @@ const Circle = ({ onPress, animatedValue, index, icon }) => {
 			<Animated.View style={[styles.circle, circleStyle]}>
 				<TouchableOpacity disabled={index == (SCREENS-1) ? true : false} onPress={onPress}>
 					<Animated.View style={[styles.circleButton, circleButtonStyle]}>
-						<AntDesign name={icon} size={28} color={'white'} />
+						<AntDesign name={icon} size={28} color={colors[index]} />
 					</Animated.View>
 				</TouchableOpacity>
 			</Animated.View>

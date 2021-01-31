@@ -14,43 +14,43 @@ import {
 import { AntDesign } from '@expo/vector-icons';
 import Animated, { useSharedValue, withTiming, useAnimatedStyle, interpolate, runOnJS, interpolateColor } from 'react-native-reanimated';
 
+import { bgColorInput, bgColorOutput, transformInput, rotateY_CircleOutput, scale_CircleOutput, translateX_CircleOutput, rotateY_CircleButtonOutput, textOpacityInput, textOpacityOutput, circleButtonOpacityInput, circleButtonOpacityOutput } from './helpers';
+
 const { width } = Dimensions.get('window');
 const CIRCLE_SIZE = 100;
 const DURATION = 1400;
 const DOT_PADDING_BOTTOM = 75;
-const SCREENS = 3;	// >= 2 (number of screens to animate)
+const SCREENS = 5;	// >= 2 (number of screens to animate)
+
+//ANIMATED CONFIGS:
+const PERSPECTIVE = 200;	// 100, 150, 200, 300, 400
+const SCREEN_COLORS = ['gold', '#222', 'gold', '#222', 'gold'];
+const SCREEN_COLORS_REVERSE = ['#222', 'gold', '#222', 'gold', '#222'];
+const BG_COLOR_INPUT = bgColorInput(SCREENS);
+const BG_COLOR_OUTPUT = bgColorOutput(SCREEN_COLORS);
+const BG_COLOR_OUTPUT_REVERSE = bgColorOutput(SCREEN_COLORS_REVERSE);
+const TRANSFORM_INPUT = transformInput(SCREENS);
+const ROTATE_Y_CIRCLE_OUTPUT = rotateY_CircleOutput(SCREENS);
+const SCALE_CIRCLE_OUTPUT = scale_CircleOutput(SCREENS);
+const TRANSLATE_X_CIRCLE_OUTPUT = translateX_CircleOutput(SCREENS, PERSPECTIVE);
+const ROTATE_Y_CIRCLE_BUTTON_OUTPUT = rotateY_CircleButtonOutput(SCREENS);
+const CIRCLE_BUTTON_OPACITY_INPUT = circleButtonOpacityInput(SCREENS);
+const CIRCLE_BUTTON_OPACITY_OUTPUT = circleButtonOpacityOutput(SCREENS);
+const TEXT_OPACITY_INPUT = textOpacityInput(SCREENS);
+const TEXT_OPACITY_OUTPUT = textOpacityOutput(SCREENS);
 
 if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
 	UIManager.setLayoutAnimationEnabledExperimental(true);
 }
 
-// [0, 0.5, 0.501, 1]															done
-	// ['gold', 'gold', 'black', 'black']										done
-	// ['black', 'black', 'gold', 'gold']	usar o reverse()					done
-
-// icon colors
-	// ['gold', 'black', 'gold']												done
-
-// [0, 0.5, 1]																	done
-	// [0, -90, -180]															done
-	// [1, 8, 1]				mantém											done
-	// [0, width/48, 0]			mantém											done
-	// [0, 180, 180]															done
-
-// [0, 0.2, 0.8, 1]																done
-	// [1, 0, 0, 1]																done
-
-
 const Circle = ({ onPress, animatedValue, index, icon }) => {
-
-	const iconColors = ['gold', 'black', 'gold'];
 
 	const containerBackgroundColorStyle = useAnimatedStyle(() => {
 		return {
 			backgroundColor: interpolateColor(
 				animatedValue.value,
-				[0, 0.5, 0.501, 1, 1, 1.5, 1.501, 2],
-				['gold', 'gold', 'black', 'black', 'black', 'black', 'gold', 'gold'],
+				BG_COLOR_INPUT,
+				BG_COLOR_OUTPUT
 			)
 		};
 	});
@@ -59,34 +59,34 @@ const Circle = ({ onPress, animatedValue, index, icon }) => {
 		return {
 			transform: [
 				{
-					perspective: 200
+					perspective: PERSPECTIVE
 				},
 				{
 					rotateY: `${interpolate(
 						animatedValue.value,
-						[0, 0.5, 1, 1, 1.5, 2],
-						[0, -90, -180, -180, -270, -360]
+						TRANSFORM_INPUT,
+						ROTATE_Y_CIRCLE_OUTPUT
 					)}deg`
 				},
 				{
 					scale: interpolate(
 						animatedValue.value,
-						[0, 0.5, 1, 1, 1.5, 2],
-						[1, 8, 1, 1, 8, 1]
+						TRANSFORM_INPUT,
+						SCALE_CIRCLE_OUTPUT
 					)
 				},
 				{
 					translateX: interpolate(
 						animatedValue.value,
-						[0, 0.5, 1, 1, 1.5, 2],
-						[0, width/48, 0, 0, width/48, 0] //perspective 400 = 16 ; perscpective 300 = 32 ; perscpective 200 = 48
+						TRANSFORM_INPUT,
+						TRANSLATE_X_CIRCLE_OUTPUT //perspective 400 = 16 ; perscpective 300 = 32 ; perscpective 200 = 48
 					)
 				}
 			],
 			backgroundColor: interpolateColor(
 				animatedValue.value,
-				[0, 0.5, 0.501, 1, 1, 1.5, 1.501, 2],
-				['black', 'black', 'gold', 'gold', 'gold', 'gold', 'black', 'black']
+				BG_COLOR_INPUT,
+				BG_COLOR_OUTPUT_REVERSE
 			)
 		};
 	});
@@ -97,15 +97,15 @@ const Circle = ({ onPress, animatedValue, index, icon }) => {
 				{
 					rotateY: `${interpolate(
 						animatedValue.value,
-						[0, 0.5, 1, 1, 1.5, 2],
-						[0, 180, 180, 180, 360, 360]
+						TRANSFORM_INPUT,
+						ROTATE_Y_CIRCLE_BUTTON_OUTPUT
 					)}deg`
 				},
 			],
 			opacity: interpolate(
 				animatedValue.value,
-				[0, 0.3, 0.7, 1, 1, 1.3, 1.7, 2],
-				[1, 0, 0, 1, 1, 0, 0, 1]
+				CIRCLE_BUTTON_OPACITY_INPUT,
+				CIRCLE_BUTTON_OPACITY_OUTPUT
 			)
 		};
 	});
@@ -128,12 +128,12 @@ export default () => {
 	const animatedValue = useSharedValue(0);
 	const [index, setIndex] = useState(0);
 	const [icon, setIcon] = useState('arrowright');
-	const [disabled, setDisabled] = useState(false);
 
 	const animate = (i) => {
 		animatedValue.value =  withTiming(i, {
 			duration: DURATION,
 		});
+
 		LayoutAnimation.configureNext({
 			duration: 300,
 			create: {
@@ -174,13 +174,13 @@ export default () => {
 		return {
 			color: interpolateColor(
 				animatedValue.value,
-				[0, 0.5, 0.501, 1, 1, 1.5, 1.501, 2],
-				['black', 'black', 'gold', 'gold', 'gold', 'gold', 'black', 'black']
+				BG_COLOR_INPUT,
+				BG_COLOR_OUTPUT_REVERSE
 			),
 			opacity: interpolate(
 				animatedValue.value,
-				[0, 0.5, 0.8, 1, 1, 1.5, 1.8, 2],
-				[1, 0, 0, 1, 1, 0, 0, 1]
+				TEXT_OPACITY_INPUT,
+				TEXT_OPACITY_OUTPUT
 			)
 		};
 	});

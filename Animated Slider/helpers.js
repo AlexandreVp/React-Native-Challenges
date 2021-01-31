@@ -112,7 +112,20 @@ export const rotateY_CircleButtonOutput = (screens) => {
     return baseInput;
 }
 
-export const textOpacityInput = (screens) => {
+export const circleButtonOpacityInput = (screens) => {
+    let baseInput = [];
+
+    for (let i = 0; i < screens - 1; i++) {
+        baseInput.push(i);
+        baseInput.push(i+0.3);
+        baseInput.push(i+0.7);
+        baseInput.push(i+1);
+    }
+
+    return baseInput;
+}
+
+export const circleButtonOpacityOutput = (screens) => {
     let baseInput = [];
 
     for (let i = 0; i < screens - 1; i++) {
@@ -125,7 +138,7 @@ export const textOpacityInput = (screens) => {
     return baseInput;
 }
 
-export const textOpacityOutput = (screens) => {
+export const textOpacityInput = (screens) => {
     let baseInput = [];
 
     for (let i = 0; i < screens - 1; i++) {
@@ -133,6 +146,19 @@ export const textOpacityOutput = (screens) => {
         baseInput.push(i+0.5);
         baseInput.push(i+0.8);
         baseInput.push(i+1);
+    }
+
+    return baseInput;
+}
+
+export const textOpacityOutput = (screens) => {
+    let baseInput = [];
+
+    for (let i = 0; i < screens - 1; i++) {
+        baseInput.push(1);
+        baseInput.push(0);
+        baseInput.push(0);
+        baseInput.push(1);
     }
 
     return baseInput;

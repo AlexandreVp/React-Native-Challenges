@@ -74,6 +74,9 @@ export const translateX_CircleOutput = (screens, perspective) => {
     let adjustment;
 
     switch (perspective) {
+        case 100:
+            adjustment = 64;
+            break;
         case 150:
             adjustment = 56;
             break;

@@ -104,7 +104,7 @@ const Circle = ({ onPress, animatedValue, index, icon }) => {
 			],
 			opacity: interpolate(
 				animatedValue.value,
-				[0, 0.2, 0.8, 1, 1, 1.2, 1.8, 2],
+				[0, 0.3, 0.7, 1, 1, 1.3, 1.7, 2],
 				[1, 0, 0, 1, 1, 0, 0, 1]
 			)
 		};
@@ -115,7 +115,7 @@ const Circle = ({ onPress, animatedValue, index, icon }) => {
 			<Animated.View style={[styles.circle, circleStyle]}>
 				<TouchableOpacity disabled={index == (SCREENS-1) ? true : false} onPress={onPress}>
 					<Animated.View style={[styles.circleButton, circleButtonStyle]}>
-						<AntDesign name={icon} size={28} color={iconColors[index]} />
+						<AntDesign name={icon} size={28} color={'white'} />
 					</Animated.View>
 				</TouchableOpacity>
 			</Animated.View>

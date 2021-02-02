@@ -27,21 +27,22 @@ const data = Object.keys(images).map((i) => ({
 const Tab = ({ item }) => {
 	return (
 		<View>
-			<Text>{item.title}</Text>
+			<Text style={[styles.tabTitle]}>{item.title}</Text>
 		</View>
 	)
 };
 
 const Tabs = ({ scrollX, data }) => {
 	return (
-		<View>
-			<View>
+		<View style={styles.tabsContainer}>
+			<View style={styles.tabsWrapper}>
 				{data.map(item => {
 					return (
 						<Tab key={item.key} item={item} />
 					)
 				})}
 			</View>
+			
 		</View>
 	)
 };
@@ -95,5 +96,21 @@ const styles = StyleSheet.create({
 	},
 	backgroundOpacity: {
 		backgroundColor: 'rgba(0,0,0,0.3)'
+	},
+	tabsContainer: {
+		position: 'absolute',
+		top: 100,
+		width: width,
+	},
+	tabsWrapper: {
+		flex: 1,
+		flexDirection: 'row',
+		justifyContent: 'space-evenly',
+	},
+	tabTitle: {
+		color: '#FFFFFF',
+		fontSize: 84 / data.length,
+		fontWeight: 'bold',
+		textTransform: 'uppercase'
 	}
 });

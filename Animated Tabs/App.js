@@ -2,7 +2,7 @@ import { StatusBar } from 'expo-status-bar';
 import React from 'react';
 import { StyleSheet, Text, View, Dimensions, Image } from 'react-native';
 import { FlatList } from 'react-native-gesture-handler';
-import Animated, { useSharedValue } from 'react-native-reanimated';
+import Animated, { useSharedValue, useAnimatedScrollHandler } from 'react-native-reanimated';
 
 const AnimatedFlatList = Animated.createAnimatedComponent(FlatList);
 const { width, height } = Dimensions.get('screen');
@@ -28,11 +28,16 @@ export default function App() {
 
 	const scrollX = useSharedValue(0);
 
+	const onScrollEvent = useAnimatedScrollHandler((event) => {
+		scrollX.value = event.contentOffset.x;
+	});
+
 	return (
 		<View style={styles.container}>
 			<StatusBar hidden />
 			<AnimatedFlatList 
 				data={data}
+				onScroll={onScrollEvent}
 				horizontal
 				showHorizontalScrollIndicator={false}
 				pagingEnabled

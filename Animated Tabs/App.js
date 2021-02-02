@@ -1,8 +1,8 @@
 import { StatusBar } from 'expo-status-bar';
-import React, { createRef, forwardRef, useEffect, useRef, useState } from 'react';
+import React, { createRef, forwardRef, useCallback, useEffect, useRef, useState } from 'react';
 import { StyleSheet, Text, View, Dimensions, Image, findNodeHandle } from 'react-native';
 import { FlatList } from 'react-native-gesture-handler';
-import Animated, { useSharedValue, useAnimatedScrollHandler } from 'react-native-reanimated';
+import Animated, { useSharedValue, useAnimatedScrollHandler, useAnimatedStyle, interpolate, measure } from 'react-native-reanimated';
 
 const AnimatedFlatList = Animated.createAnimatedComponent(FlatList);
 const { width, height } = Dimensions.get('screen');
@@ -33,9 +33,31 @@ const Tab = forwardRef(({ item }, ref) => {
 	)
 });
 
-const Indicator = () => {
+const Indicator = ({ measures, scrollX }) => {
+
+	const inputRange = data.map((_, index) => index*width)
+
+	const indicatorStyle = useAnimatedStyle(() => {
+		return {
+			width: interpolate(
+				scrollX.value,
+				inputRange,
+				measures.map(measure => measure.width)
+			),
+			transform: [
+				{ 
+					translateX: interpolate(
+						scrollX.value,
+						inputRange,
+						measures.map(measure => measure.x)
+					) 
+				}
+			]
+		}
+	})
+
 	return (
-		<View style={styles.indicator}/>
+		<Animated.View style={[styles.indicator, indicatorStyle]}/>
 	)
 };
 
@@ -44,7 +66,7 @@ const Tabs = ({ scrollX, data }) => {
 	const [measures, setMeasures] = useState([]);
 	const containerRef = useRef();
 
-	useEffect(() => {
+	const updateMeasures = useCallback(() => {
 		let m = [];
 
 		data.forEach(item => {
@@ -64,7 +86,11 @@ const Tabs = ({ scrollX, data }) => {
 				}
 			);
 		})
-	}, []);
+	});
+
+	useEffect(() => {
+		updateMeasures();
+	}, [updateMeasures]);
 
 	return (
 		<View style={styles.tabsContainer}>
@@ -152,7 +178,6 @@ const styles = StyleSheet.create({
 	indicator: {
 		position: 'absolute',
 		height: 4,
-		width: 100,
 		backgroundColor: '#FFFFFF',
 		bottom: -10
 	}

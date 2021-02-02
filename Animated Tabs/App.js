@@ -1,9 +1,10 @@
 import { StatusBar } from 'expo-status-bar';
 import React from 'react';
-import { StyleSheet, Text, View, Dimensions } from 'react-native';
+import { StyleSheet, Text, View, Dimensions, Image } from 'react-native';
 import { FlatList } from 'react-native-gesture-handler';
 import Animated, {} from 'react-native-reanimated';
 
+const AnimatedFlatList = Animated.createAnimatedComponent(FlatList);
 const { width, height } = Dimensions.get('screen');
 const images = {
 	man:
@@ -27,19 +28,21 @@ export default function App() {
 	return (
 		<View style={styles.container}>
 			<StatusBar hidden />
-			<Text style={{ fontSize: 42 }}>❤️</Text>
-			<Text
-				style={{
-				marginTop: 10,
-				fontWeight: '800',
-				fontSize: 16,
+			<AnimatedFlatList 
+				data={data}
+				horizontal
+				showHorizontalScrollIndicator={false}
+				pagingEnabled
+				bounces={false}
+				keyExtractor={item => item.key}
+				renderItem={({item}) => {
+					return (
+						<View style={styles.imageWrapper}>
+							<Image source={{ uri: item.image }} style={styles.image} resizeMode='cover' />
+						</View>
+					)
 				}}
-			>
-				Expo
-			</Text>
-			<Text style={{ fontStyle: 'italic', fontSize: 12 }}>
-				(expo.io)
-			</Text>
+			/>
 		</View>
 	);
 }
@@ -50,5 +53,12 @@ const styles = StyleSheet.create({
 		backgroundColor: '#fff',
 		alignItems: 'center',
 		justifyContent: 'center',
+	},
+	imageWrapper: {
+		width: width,
+		height: height
+	},
+	image: {
+		flex: 1
 	},
 });

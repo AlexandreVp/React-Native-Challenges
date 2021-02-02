@@ -1,6 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
-import React from 'react';
-import { StyleSheet, Text, View, Dimensions, Image } from 'react-native';
+import React, { createRef, forwardRef, useEffect, useRef, useState } from 'react';
+import { StyleSheet, Text, View, Dimensions, Image, findNodeHandle } from 'react-native';
 import { FlatList } from 'react-native-gesture-handler';
 import Animated, { useSharedValue, useAnimatedScrollHandler } from 'react-native-reanimated';
 
@@ -22,15 +22,16 @@ const data = Object.keys(images).map((i) => ({
 	key: i,
 	title: i,
 	image: images[i],
+	ref: createRef()
 }));
 
-const Tab = ({ item }) => {
+const Tab = forwardRef(({ item }, ref) => {
 	return (
-		<View>
+		<View ref={ref}>
 			<Text style={[styles.tabTitle]}>{item.title}</Text>
 		</View>
 	)
-};
+});
 
 const Indicator = () => {
 	return (
@@ -39,16 +40,45 @@ const Indicator = () => {
 };
 
 const Tabs = ({ scrollX, data }) => {
+
+	const [measures, setMeasures] = useState([]);
+	const containerRef = useRef();
+
+	useEffect(() => {
+		let m = [];
+
+		data.forEach(item => {
+			item.ref.current.measureLayout(
+				containerRef.current,
+				(x, y, width, height) => {
+					m.push({
+						x,
+						y,
+						width,
+						height
+					});
+
+					if (m.length === data.length) {
+						setMeasures(m);
+					}
+				}
+			);
+		})
+	}, []);
+
 	return (
 		<View style={styles.tabsContainer}>
-			<View style={styles.tabsWrapper}>
+			<View
+				ref={containerRef} 
+				style={styles.tabsWrapper}
+			>
 				{data.map(item => {
 					return (
-						<Tab key={item.key} item={item} />
+						<Tab key={item.key} item={item} ref={item.ref} />
 					)
 				})}
 			</View>
-			<Indicator />
+			{measures.length > 0 && <Indicator measures={measures} scrollX={scrollX} />}
 		</View>
 	)
 };

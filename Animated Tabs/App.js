@@ -1,7 +1,7 @@
 import { StatusBar } from 'expo-status-bar';
 import React, { createRef, forwardRef, useCallback, useEffect, useRef, useState } from 'react';
 import { StyleSheet, Text, View, Dimensions, Image, findNodeHandle } from 'react-native';
-import { FlatList } from 'react-native-gesture-handler';
+import { FlatList, TouchableOpacity } from 'react-native-gesture-handler';
 import Animated, { useSharedValue, useAnimatedScrollHandler, useAnimatedStyle, interpolate, measure } from 'react-native-reanimated';
 
 const AnimatedFlatList = Animated.createAnimatedComponent(FlatList);
@@ -25,11 +25,13 @@ const data = Object.keys(images).map((i) => ({
 	ref: createRef()
 }));
 
-const Tab = forwardRef(({ item }, ref) => {
+const Tab = forwardRef(({ item, onItemPress }, ref) => {
 	return (
-		<View ref={ref}>
-			<Text style={[styles.tabTitle]}>{item.title}</Text>
-		</View>
+		<TouchableOpacity onPress={onItemPress} >
+			<View ref={ref}>
+				<Text style={[styles.tabTitle]}>{item.title}</Text>
+			</View>
+		</TouchableOpacity>
 	)
 });
 
@@ -61,7 +63,7 @@ const Indicator = ({ measures, scrollX }) => {
 	)
 };
 
-const Tabs = ({ scrollX, data }) => {
+const Tabs = ({ scrollX, data, onItemPress }) => {
 
 	const [measures, setMeasures] = useState([]);
 	const containerRef = useRef();
@@ -98,9 +100,9 @@ const Tabs = ({ scrollX, data }) => {
 				ref={containerRef} 
 				style={styles.tabsWrapper}
 			>
-				{data.map(item => {
+				{data.map((item, index) => {
 					return (
-						<Tab key={item.key} item={item} ref={item.ref} />
+						<Tab key={item.key} item={item} ref={item.ref} onItemPress={() => onItemPress(index)} />
 					)
 				})}
 			</View>
@@ -112,6 +114,14 @@ const Tabs = ({ scrollX, data }) => {
 export default function App() {
 
 	const scrollX = useSharedValue(0);
+	const ref = useRef();
+	
+	const onItemPress = itemIndex => {
+		ref?.current?.scrollToOffset({
+			animated: true,
+			offset: itemIndex * width
+		})
+	};
 
 	const onScrollEvent = useAnimatedScrollHandler((event) => {
 		scrollX.value = event.contentOffset.x;
@@ -120,7 +130,8 @@ export default function App() {
 	return (
 		<View style={styles.container}>
 			<StatusBar hidden />
-			<AnimatedFlatList 
+			<AnimatedFlatList
+				ref={ref}
 				data={data}
 				onScroll={onScrollEvent}
 				horizontal
@@ -137,7 +148,7 @@ export default function App() {
 					)
 				}}
 			/>
-			<Tabs scrollX={scrollX} data={data} />
+			<Tabs scrollX={scrollX} data={data} onItemPress={onItemPress} />
 		</View>
 	);
 }

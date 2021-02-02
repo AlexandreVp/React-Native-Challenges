@@ -32,6 +32,12 @@ const Tab = ({ item }) => {
 	)
 };
 
+const Indicator = () => {
+	return (
+		<View style={styles.indicator}/>
+	)
+};
+
 const Tabs = ({ scrollX, data }) => {
 	return (
 		<View style={styles.tabsContainer}>
@@ -42,7 +48,7 @@ const Tabs = ({ scrollX, data }) => {
 					)
 				})}
 			</View>
-			
+			<Indicator />
 		</View>
 	)
 };
@@ -112,5 +118,12 @@ const styles = StyleSheet.create({
 		fontSize: 84 / data.length,
 		fontWeight: 'bold',
 		textTransform: 'uppercase'
+	},
+	indicator: {
+		position: 'absolute',
+		height: 4,
+		width: 100,
+		backgroundColor: '#FFFFFF',
+		bottom: -10
 	}
 });

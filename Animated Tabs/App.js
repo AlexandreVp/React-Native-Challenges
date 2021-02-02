@@ -2,7 +2,7 @@ import { StatusBar } from 'expo-status-bar';
 import React from 'react';
 import { StyleSheet, Text, View, Dimensions, Image } from 'react-native';
 import { FlatList } from 'react-native-gesture-handler';
-import Animated, {} from 'react-native-reanimated';
+import Animated, { useSharedValue } from 'react-native-reanimated';
 
 const AnimatedFlatList = Animated.createAnimatedComponent(FlatList);
 const { width, height } = Dimensions.get('screen');
@@ -25,6 +25,9 @@ const data = Object.keys(images).map((i) => ({
 }));
 
 export default function App() {
+
+	const scrollX = useSharedValue(0);
+
 	return (
 		<View style={styles.container}>
 			<StatusBar hidden />
@@ -39,6 +42,7 @@ export default function App() {
 					return (
 						<View style={styles.imageWrapper}>
 							<Image source={{ uri: item.image }} style={styles.image} resizeMode='cover' />
+							<View style={[StyleSheet.absoluteFillObject, styles.backgroundOpacity]} />
 						</View>
 					)
 				}}
@@ -61,4 +65,7 @@ const styles = StyleSheet.create({
 	image: {
 		flex: 1
 	},
+	backgroundOpacity: {
+		backgroundColor: 'rgba(0,0,0,0.3)'
+	}
 });

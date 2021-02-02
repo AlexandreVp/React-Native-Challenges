@@ -24,6 +24,28 @@ const data = Object.keys(images).map((i) => ({
 	image: images[i],
 }));
 
+const Tab = ({ item }) => {
+	return (
+		<View>
+			<Text>{item.title}</Text>
+		</View>
+	)
+};
+
+const Tabs = ({ scrollX, data }) => {
+	return (
+		<View>
+			<View>
+				{data.map(item => {
+					return (
+						<Tab key={item.key} item={item} />
+					)
+				})}
+			</View>
+		</View>
+	)
+};
+
 export default function App() {
 
 	const scrollX = useSharedValue(0);
@@ -52,6 +74,7 @@ export default function App() {
 					)
 				}}
 			/>
+			<Tabs scrollX={scrollX} data={data} />
 		</View>
 	);
 }

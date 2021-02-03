@@ -2,13 +2,12 @@ import React from 'react';
 import {
 	Dimensions,
 	Image,
-	Text,
 	View,
 	StyleSheet,
+	FlatList
 } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
-import { FlatList } from 'react-native-gesture-handler';
-import Animated, {} from 'react-native-reanimated';
+import Animated, { interpolate, useAnimatedScrollHandler, useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
 
 const { width, height } = Dimensions.get('screen');
 const ITEM_WIDTH = width * 0.76;
@@ -35,7 +34,56 @@ const data = images.map((image, index) => ({
 	)}.jpg`,
 }));
 
+const ImageCard = ({ photo, avatar_url, index, scrollX }) => {
+
+	const inputRange = [
+		(index - 1) * width,
+		index * width,
+		(index + 1) * width
+	];
+
+	const imageStyle = useAnimatedStyle(() => {
+		return {
+			transform: [
+				{
+					translateX: interpolate(
+						scrollX.value,
+						inputRange,
+						[-width * .5, 0, width * .5]
+					)
+				}
+			]
+		};
+	});
+
+	return (
+		<View style={styles.imageContainer}>
+			<View style={styles.imageWrapperBorder}>
+				<View style={styles.imageWrapper}>
+					<Animated.Image 
+						source={{ uri: photo }}
+						style={[styles.image, imageStyle]}
+						resizeMode='cover'
+					/>
+				</View>
+				<Image 
+					source={{ uri: avatar_url }}
+					style={styles.avatarImage}
+					resizeMode='cover'
+				/>
+			</View>
+		</View>
+	)
+};
+
 export default function App() {
+
+	const scrollX = useSharedValue(0);
+
+	const onScrollEvent = useAnimatedScrollHandler((event) => {
+		scrollX.value = event.contentOffset.x;
+	});
+
 	return (
 		<View style={styles.container}>
 			<StatusBar hidden />
@@ -45,26 +93,17 @@ export default function App() {
 				horizontal
 				showsHorizontalScrollIndicator={false}
 				pagingEnabled
+				scrollEventThrottle={16}
 				bounces={false}
-				renderItem={({item, index}) => {
-					return (
-						<View style={styles.imageContainer}>
-							<View style={styles.imageWrapperBorder}>
-								<View style={styles.imageWrapper}>
-									<Image 
-										source={{ uri: item.photo }}
-										style={styles.image}
-										resizeMode='cover'
-									/>
-								</View>
-								<Image 
-									source={{ uri: item.avatar_url }}
-									style={styles.avatarImage}
-								/>
-							</View>
-						</View>
-					)
-				}}
+				onScroll={onScrollEvent}
+				renderItem={({item, index}) =>
+					<ImageCard 
+						photo={item.photo}
+						avatar_url={item.avatar_url}
+						index={index}
+						scrollX={scrollX}
+					/>
+				}
 			/>
 		</View>
 	);
@@ -91,9 +130,9 @@ const styles = StyleSheet.create({
 			width: 0,
 			height: 0
 		},
-		shadowOpacity: 1,
-		shadowRadius: 20,
-		elevation: 25,
+		shadowOpacity: 0.5,
+		shadowRadius: 30,
+		elevation: 30,
 	},
 	imageWrapper: {
 		width: ITEM_WIDTH,
@@ -103,7 +142,7 @@ const styles = StyleSheet.create({
 		borderRadius: 14
 	},
 	image: {
-		width: ITEM_WIDTH,
+		width: ITEM_WIDTH * 1.1,
 		height: ITEM_HEIGHT,
 	},
 	avatarImage: {

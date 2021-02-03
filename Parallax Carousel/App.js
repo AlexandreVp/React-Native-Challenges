@@ -39,19 +39,33 @@ export default function App() {
 	return (
 		<View style={styles.container}>
 			<StatusBar hidden />
-			<Text style={{ fontSize: 114 }}>❤️</Text>
-			<Text
-				style={{
-					marginTop: 10,
-					fontWeight: '800',
-					fontSize: 32,
+			<AnimatedFlatList 
+				data={data}
+				keyExtractor={item => item.key}
+				horizontal
+				showsHorizontalScrollIndicator={false}
+				pagingEnabled
+				bounces={false}
+				renderItem={({item, index}) => {
+					return (
+						<View style={styles.imageContainer}>
+							<View style={styles.imageWrapperBorder}>
+								<View style={styles.imageWrapper}>
+									<Image 
+										source={{ uri: item.photo }}
+										style={styles.image}
+										resizeMode='cover'
+									/>
+								</View>
+								<Image 
+									source={{ uri: item.avatar_url }}
+									style={styles.avatarImage}
+								/>
+							</View>
+						</View>
+					)
 				}}
-			>
-				Expo
-			</Text>
-			<Text style={{ fontStyle: 'italic', fontSize: 18 }}>
-				(expo.io)
-			</Text>
+			/>
 		</View>
 	);
 }
@@ -62,5 +76,44 @@ const styles = StyleSheet.create({
 		backgroundColor: '#fff',
 		alignItems: 'center',
 		justifyContent: 'center',
-  	},
+	},
+	imageContainer: {
+		width: width,
+		justifyContent: 'center',
+		alignItems: 'center'
+	},
+	imageWrapperBorder: {
+		borderRadius: 14,
+		padding: 10,
+		backgroundColor: '#FFFFFF',
+		shadowColor: '#000000',
+		shadowOffset: {
+			width: 0,
+			height: 0
+		},
+		shadowOpacity: 1,
+		shadowRadius: 20,
+		elevation: 25,
+	},
+	imageWrapper: {
+		width: ITEM_WIDTH,
+		height: ITEM_HEIGHT,
+		overflow: 'hidden',
+		alignItems: 'center',
+		borderRadius: 14
+	},
+	image: {
+		width: ITEM_WIDTH,
+		height: ITEM_HEIGHT,
+	},
+	avatarImage: {
+		width: 60,
+		height: 60,
+		borderRadius: 30,
+		borderWidth: 5,
+		borderColor: '#FFFFFF',
+		position: 'absolute',
+		bottom: -30,
+		right: 30
+	}
 });

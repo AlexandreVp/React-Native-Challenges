@@ -1,4 +1,4 @@
-import React, { forwardRef, useRef, useState } from 'react';
+import React, { forwardRef, useRef, useState, useEffect } from 'react';
 import {
   TouchableOpacity,
   Alert,
@@ -10,7 +10,7 @@ import {
 } from 'react-native';
 import { SimpleLineIcons } from '@expo/vector-icons';
 import { FlatList } from 'react-native-gesture-handler';
-import Animated, { useAnimatedScrollHandler, useSharedValue } from 'react-native-reanimated';
+import Animated, { runOnJS, useAnimatedScrollHandler, useSharedValue } from 'react-native-reanimated';
 
 import data from './data';
 import colors from './colors';
@@ -76,7 +76,7 @@ const List = forwardRef(({ color, showText, style, onScroll }, ref) => {
 			onScroll={onScroll}
 			contentContainerStyle={{
 				paddingTop: showText ? 0 : height / 2 - ITEM_HEIGHT / 2 - StatusBar.currentHeight,
-				paddingBottom: showText ? 0 : height / 2 - ITEM_HEIGHT / 2,
+				paddingBottom: showText ? 0 : height / 2 - ITEM_HEIGHT / 2 + StatusBar.currentHeight,
 				paddingHorizontal: 20, 
 			}}
 			renderItem={({ item }) => {
@@ -85,6 +85,8 @@ const List = forwardRef(({ color, showText, style, onScroll }, ref) => {
 				)
 			}}
 			scrollEnabled={!showText}
+			showsVerticalScrollIndicator={false}
+			snapToInterval={ITEM_HEIGHT}
 		/>
 	);
 });
@@ -101,8 +103,17 @@ export default function App() {
 		Alert.alert('Connect with:', data[index].name.toUpperCase());
 	};
 
+	const scrollToOffset = () => {
+		"Worklet"
+		darkRef.current.scrollToOffset({
+			offset: scrollY.value,
+			animated: false
+		});
+	};
+
 	const onScrollEvent = useAnimatedScrollHandler((event) => {
 		scrollY.value = event.contentOffset.y;
+		runOnJS(scrollToOffset)();
 	});
 
 	return (

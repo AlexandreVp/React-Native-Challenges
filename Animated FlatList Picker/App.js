@@ -10,7 +10,7 @@ import {
 } from 'react-native';
 import { SimpleLineIcons } from '@expo/vector-icons';
 import { FlatList } from 'react-native-gesture-handler';
-import Animated, {} from 'react-native-reanimated';
+import Animated, { useAnimatedScrollHandler, useSharedValue } from 'react-native-reanimated';
 
 import data from './data';
 import colors from './colors';
@@ -18,6 +18,8 @@ import colors from './colors';
 const { width, height } = Dimensions.get('window');
 const ICON_SIZE = 42;
 const ITEM_HEIGHT = ICON_SIZE * 2;
+
+const AnimatedFlatList = Animated.createAnimatedComponent(FlatList);
 
 const Icon = React.memo(({ icon, color }) => {
   	return (
@@ -62,24 +64,27 @@ const ConnectButton = React.memo(({ onPress }) => {
 	);
 });
 
-const List = forwardRef(({ color, showText, style }, ref) => {
+const List = forwardRef(({ color, showText, style, onScroll }, ref) => {
 	return (
-		<FlatList
+		<AnimatedFlatList
 			ref={ref}
 			data={data}
 			style={style}
 			keyExtractor={item => `${item.name}`}
+			bounces={false}
+			scrollEventThrottle={16}
+			onScroll={onScroll}
 			contentContainerStyle={{
 				paddingTop: showText ? 0 : height / 2 - ITEM_HEIGHT / 2 - StatusBar.currentHeight,
 				paddingBottom: showText ? 0 : height / 2 - ITEM_HEIGHT / 2,
 				paddingHorizontal: 20, 
 			}}
-			bounces={false}
 			renderItem={({ item }) => {
 				return (
 					<Item {...item} color={color} showText={showText} />
 				)
 			}}
+			scrollEnabled={!showText}
 		/>
 	);
 });
@@ -87,6 +92,7 @@ const List = forwardRef(({ color, showText, style }, ref) => {
 
 export default function App() {
 	const [index, setIndex] = useState(0);
+	const scrollY = useSharedValue(0);
 
 	const yellowRef = useRef();
 	const darkRef = useRef();
@@ -95,12 +101,16 @@ export default function App() {
 		Alert.alert('Connect with:', data[index].name.toUpperCase());
 	};
 
+	const onScrollEvent = useAnimatedScrollHandler((event) => {
+		scrollY.value = event.contentOffset.y;
+	});
+
 	return (
 		<View style={styles.container}>
 			<StatusBar hidden />
 			{/* <ConnectWithText /> */}
-			<List ref={yellowRef} color={colors.yellow} style={StyleSheet.absoluteFillObject} />
-			<List ref={yellowRef} color={colors.dark} showText style={styles.darkFlatList} />
+			<List onScroll={onScrollEvent} ref={yellowRef} color={colors.yellow} style={StyleSheet.absoluteFillObject} />
+			<List ref={darkRef} color={colors.dark} showText style={styles.yellowFlatList} />
 			{/* <ConnectButton onPress={onConnectPress} /> */}
 			<Item />
 		</View>
@@ -114,7 +124,7 @@ const styles = StyleSheet.create({
 		paddingTop: StatusBar.currentHeight,
 		backgroundColor: colors.dark,
 	},
-	darkFlatList: {
+	yellowFlatList: {
 		position: 'absolute',
 		backgroundColor: colors.yellow,
 		width: width,

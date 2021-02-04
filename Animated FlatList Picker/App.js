@@ -62,13 +62,18 @@ const ConnectButton = React.memo(({ onPress }) => {
 	);
 });
 
-const List = forwardRef(({ color, showText }, ref) => {
+const List = forwardRef(({ color, showText, style }, ref) => {
 	return (
 		<FlatList
 			ref={ref}
 			data={data}
+			style={style}
 			keyExtractor={item => `${item.name}`}
-			contentContainerStyle={styles.contentContainerStyle}
+			contentContainerStyle={{
+				paddingTop: showText ? 0 : height / 2 - ITEM_HEIGHT / 2 - StatusBar.currentHeight,
+				paddingBottom: showText ? 0 : height / 2 - ITEM_HEIGHT / 2,
+				paddingHorizontal: 20, 
+			}}
 			bounces={false}
 			renderItem={({ item }) => {
 				return (
@@ -93,9 +98,10 @@ export default function App() {
 	return (
 		<View style={styles.container}>
 			<StatusBar hidden />
-			<ConnectWithText />
-			<List ref={yellowRef} color={colors.yellow} showText />
-			<ConnectButton onPress={onConnectPress} />
+			{/* <ConnectWithText /> */}
+			<List ref={yellowRef} color={colors.yellow} style={StyleSheet.absoluteFillObject} />
+			<List ref={yellowRef} color={colors.dark} showText style={styles.darkFlatList} />
+			{/* <ConnectButton onPress={onConnectPress} /> */}
 			<Item />
 		</View>
 	);
@@ -108,10 +114,12 @@ const styles = StyleSheet.create({
 		paddingTop: StatusBar.currentHeight,
 		backgroundColor: colors.dark,
 	},
-	contentContainerStyle: {
-		paddingTop: height / 2 - ITEM_HEIGHT / 2 - StatusBar.currentHeight,
-		paddingBottom: height / 2 - ITEM_HEIGHT - StatusBar.currentHeight,
-		paddingHorizontal: 20,
+	darkFlatList: {
+		position: 'absolute',
+		backgroundColor: colors.yellow,
+		width: width,
+		height: ITEM_HEIGHT,
+		top: height / 2 - ITEM_HEIGHT / 2 - StatusBar.currentHeight,
 	},
 	itemWrapper: {
 		flexDirection: 'row',

@@ -1,4 +1,4 @@
-import React, { forwardRef, useRef, useState, useEffect } from 'react';
+import React, { forwardRef, useRef, useState, useEffect, useCallback } from 'react';
 import {
   TouchableOpacity,
   Alert,
@@ -64,7 +64,7 @@ const ConnectButton = React.memo(({ onPress }) => {
 	);
 });
 
-const List = forwardRef(({ color, showText, style, onScroll }, ref) => {
+const List = forwardRef(({ color, showText, style, onScroll, onItemIndexChange }, ref) => {
 	return (
 		<AnimatedFlatList
 			ref={ref}
@@ -87,6 +87,12 @@ const List = forwardRef(({ color, showText, style, onScroll }, ref) => {
 			scrollEnabled={!showText}
 			showsVerticalScrollIndicator={false}
 			snapToInterval={ITEM_HEIGHT}
+			decelerationRate='fast'
+			onMomentumScrollEnd={event => {
+				const newIndex = Math.round(event.nativeEvent.contentOffset.y / ITEM_HEIGHT);
+
+				onItemIndexChange(newIndex);
+			}}
 		/>
 	);
 });
@@ -102,7 +108,7 @@ export default function App() {
 	const onConnectPress = () => {
 		Alert.alert('Connect with:', data[index].name.toUpperCase());
 	};
-
+	
 	const scrollToOffset = () => {
 		"Worklet"
 		darkRef.current.scrollToOffset({
@@ -110,19 +116,21 @@ export default function App() {
 			animated: false
 		});
 	};
-
+	
 	const onScrollEvent = useAnimatedScrollHandler((event) => {
 		scrollY.value = event.contentOffset.y;
 		runOnJS(scrollToOffset)();
 	});
 
+	const onItemIndexChange = useCallback(setIndex, []);
+	
 	return (
 		<View style={styles.container}>
 			<StatusBar hidden />
-			{/* <ConnectWithText /> */}
-			<List onScroll={onScrollEvent} ref={yellowRef} color={colors.yellow} style={StyleSheet.absoluteFillObject} />
+			<ConnectWithText />
+			<List onItemIndexChange={onItemIndexChange} onScroll={onScrollEvent} ref={yellowRef} color={colors.yellow} style={StyleSheet.absoluteFillObject} />
 			<List ref={darkRef} color={colors.dark} showText style={styles.yellowFlatList} />
-			{/* <ConnectButton onPress={onConnectPress} /> */}
+			<ConnectButton onPress={onConnectPress} />
 			<Item />
 		</View>
 	);

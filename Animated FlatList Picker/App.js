@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { forwardRef, useRef, useState } from 'react';
 import {
   TouchableOpacity,
   Alert,
@@ -62,9 +62,29 @@ const ConnectButton = React.memo(({ onPress }) => {
 	);
 });
 
+const List = forwardRef(({ color, showText }, ref) => {
+	return (
+		<FlatList
+			ref={ref}
+			data={data}
+			keyExtractor={item => `${item.name}`}
+			contentContainerStyle={styles.contentContainerStyle}
+			bounces={false}
+			renderItem={({ item }) => {
+				return (
+					<Item {...item} color={color} showText={showText} />
+				)
+			}}
+		/>
+	);
+});
+
 
 export default function App() {
-	const [index, setIndex] = React.useState(0);
+	const [index, setIndex] = useState(0);
+
+	const yellowRef = useRef();
+	const darkRef = useRef();
 
 	const onConnectPress = () => {
 		Alert.alert('Connect with:', data[index].name.toUpperCase());
@@ -74,6 +94,7 @@ export default function App() {
 		<View style={styles.container}>
 			<StatusBar hidden />
 			<ConnectWithText />
+			<List ref={yellowRef} color={colors.yellow} showText />
 			<ConnectButton onPress={onConnectPress} />
 			<Item />
 		</View>
@@ -87,11 +108,10 @@ const styles = StyleSheet.create({
 		paddingTop: StatusBar.currentHeight,
 		backgroundColor: colors.dark,
 	},
-	paragraph: {
-		margin: 24,
-		fontSize: 18,
-		fontWeight: 'bold',
-		textAlign: 'center',
+	contentContainerStyle: {
+		paddingTop: height / 2 - ITEM_HEIGHT / 2 - StatusBar.currentHeight,
+		paddingBottom: height / 2 - ITEM_HEIGHT - StatusBar.currentHeight,
+		paddingHorizontal: 20,
 	},
 	itemWrapper: {
 		flexDirection: 'row',

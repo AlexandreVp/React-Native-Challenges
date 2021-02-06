@@ -1,14 +1,13 @@
-import React, { useState } from 'react';
-import { View, StyleSheet, Dimensions, SafeAreaView, Text } from 'react-native';
-import { PanGestureHandler, TextInput } from 'react-native-gesture-handler';
+import React, { useRef } from 'react';
+import { View, StyleSheet, Dimensions, SafeAreaView, Text, TextInput } from 'react-native';
+import { PanGestureHandler } from 'react-native-gesture-handler';
 import Animated, { 
 	useSharedValue, 
 	useAnimatedGestureHandler, 
 	useAnimatedStyle, 
 	interpolate, 
 	Extrapolate,
-	runOnJS,
-	useAnimatedProps
+	runOnJS
 } from 'react-native-reanimated';
 import { StatusBar } from 'expo-status-bar';
 
@@ -16,16 +15,21 @@ import Knob, { IMAGE_SIZE } from './components/Knob';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const SLIDER_WIDTH = SCREEN_WIDTH - 100;
-const SLIDER_HEIGTH = 50;
-
-const AnimatedTextInput = Animated.createAnimatedComponent(TextInput);
 
 const App = () => {
 
+	const textInputRef = useRef();
+
 	const opacity = useSharedValue(0);
 	const translationX = useSharedValue(-IMAGE_SIZE/2);
-
 	const label = useSharedValue(Math.round(((translationX.value+IMAGE_SIZE/2)/SLIDER_WIDTH)*80));
+
+	const setInputText = (value) => {
+		"Worklet"
+		textInputRef.current.setNativeProps({
+			text: `${value}`
+		});
+	}
 
 	const onGestureEvent = useAnimatedGestureHandler({
 		onStart: (event, context) => {
@@ -38,12 +42,14 @@ const App = () => {
 			if (activePosX >= -IMAGE_SIZE/2 && activePosX <= SLIDER_WIDTH - IMAGE_SIZE/2) {
 				translationX.value = activePosX;
 				label.value = Math.round(((translationX.value+IMAGE_SIZE/2)/SLIDER_WIDTH)*80);
-				// runOnJS(setLabel)(Math.round(((translationX.value+IMAGE_SIZE/2)/SLIDER_WIDTH)*80));
+
+				runOnJS(setInputText)(label.value);
 			}
 		},
 		onEnd: () => {
 			opacity.value = 0;
-			console.log(label.value);
+
+			//callback function here
 		}
 	});
 
@@ -101,9 +107,10 @@ const App = () => {
 					</Animated.View>
 				</PanGestureHandler>
 			</View>
-			{/* <View style={styles.labelContainer}>
-				<Text style={styles.label}>{label.value.toString()} km</Text>
-			</View> */}
+			<View style={styles.labelContainer}>
+				<TextInput editable={false} ref={textInputRef} style={styles.label} defaultValue={'1'} />
+				<Text style={styles.label}> km</Text>
+			</View>
 		</SafeAreaView>
 	);
 }
@@ -137,6 +144,7 @@ const styles = StyleSheet.create({
 		height: IMAGE_SIZE
 	},
 	labelContainer: {
+		flexDirection: 'row',
 		justifyContent: 'center',
 		alignItems: 'center',
 		width: 80,
@@ -146,6 +154,7 @@ const styles = StyleSheet.create({
 		backgroundColor: '#f7f7f7'
 	},
 	label: {
+		color: '#000000',
 		fontSize: 20,
 		fontWeight: 'bold'
 	}

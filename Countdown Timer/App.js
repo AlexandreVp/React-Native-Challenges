@@ -1,6 +1,6 @@
 // Inspiration: https://dribbble.com/shots/2343572-Countdown-timer
 
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import {
   Vibration,
   StatusBar,
@@ -13,7 +13,7 @@ import {
   StyleSheet,
 } from 'react-native';
 import { FlatList } from 'react-native-gesture-handler';
-import Animated, { interpolate, useAnimatedScrollHandler, useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
+import Animated, { interpolate, useAnimatedScrollHandler, useAnimatedStyle, useSharedValue, withSequence, withTiming } from 'react-native-reanimated';
 
 
 const { width, height } = Dimensions.get('window');
@@ -42,7 +42,7 @@ const TimeNumber = ({number, index, scrollX}) => {
 			opacity: interpolate(
 				scrollX.value,
 				inputRange,
-				[0.4, 1, 0.4]
+				[0.6, 1, 0.6]
 			),
 			transform: [
 				{
@@ -66,6 +66,7 @@ const TimeNumber = ({number, index, scrollX}) => {
 export default function App() {
 
 	const scrollX = useSharedValue(0);
+	const timerAnimation = useSharedValue(height);
 
 	const [duration, setDuration] = useState(timers[0]);
 
@@ -73,18 +74,42 @@ export default function App() {
 		scrollX.value = event.contentOffset.x;
 	});
 
+	const timerAnimationCall = useCallback(() => {
+		timerAnimation.value = withSequence(
+			withTiming(0, {
+				duration: 300
+			}),
+			withTiming(height, {
+				duration: duration * 1000,
+			})
+		);
+	}, [duration]);
+
+	const animatedBackgroundStyle = useAnimatedStyle(() => {
+		return {
+			transform: [
+				{
+					translateY: timerAnimation.value,
+				}
+			]
+		};
+	});
+
 	return (
 		<View style={styles.container}>
 			<StatusBar hidden />
-			<Animated.View
+			<Animated.View 
+				style={[StyleSheet.absoluteFillObject, styles.animatedBackground, animatedBackgroundStyle]}
+			/>
+			<View
 				style={[StyleSheet.absoluteFillObject, styles.background]} 
 			>
 				<TouchableOpacity
-					onPress={() => {}}
+					onPress={timerAnimationCall}
 				>
 					<View style={styles.roundButton} />
 				</TouchableOpacity>
-			</Animated.View>
+			</View>
 			<View style={styles.textWrapper}>
 				<AnimatedFlatlist 
 					data={timers}
@@ -94,7 +119,7 @@ export default function App() {
 					showsHorizontalScrollIndicator={false}
 					contentContainerStyle={styles.contentContainerStyle}
 					snapToInterval={ITEM_SIZE}
-					decelerationRate={0.95}
+					decelerationRate='fast'
 					onScroll={onScrollEvent}
 					onMomentumScrollEnd={event => {
 						let index = Math.round(event.nativeEvent.contentOffset.x / ITEM_SIZE);
@@ -116,6 +141,11 @@ const styles = StyleSheet.create({
 	container: {
 		flex: 1,
 		backgroundColor: colors.black,
+	},
+	animatedBackground: {
+		width: width,
+		height: height,
+		backgroundColor: colors.red
 	},
 	background: {
 		justifyContent: 'flex-end',

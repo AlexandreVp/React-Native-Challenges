@@ -26,6 +26,7 @@ const colors = {
 const timers = [...Array(13).keys()].map((i) => (i === 0 ? 1 : i * 5));
 const ITEM_SIZE = width * 0.38;
 const ITEM_SPACING = (width - ITEM_SIZE) / 2;
+const ITEM_MARGIN = ITEM_SIZE / 5;
 
 export default function App() {
 	return (
@@ -41,7 +42,23 @@ export default function App() {
 				</TouchableOpacity>
 			</Animated.View>
 			<View style={styles.textWrapper}>
-				<Text style={styles.text}>1</Text>
+				<FlatList 
+					data={timers}
+					keyExtractor={item => item.toString()}
+					horizontal
+					bounces={false}
+					showsHorizontalScrollIndicator={false}
+					contentContainerStyle={styles.contentContainerStyle}
+					snapToInterval={ITEM_SIZE + ITEM_MARGIN}
+					decelerationRate='fast'
+					renderItem={({item}) => {
+						return (
+							<View style={styles.itemWrapper}>
+								<Text style={styles.text}>{item}</Text>
+							</View>
+						)
+					}}
+				/>
 			</View>
 		</View>
 	);
@@ -63,12 +80,21 @@ const styles = StyleSheet.create({
 		borderRadius: 80,
 		backgroundColor: colors.red,
 	},
+	contentContainerStyle: {
+		paddingHorizontal: ITEM_SPACING
+	},
 	textWrapper: {
 		position: 'absolute',
 		top: height / 3,
 		left: 0,
 		right: 0,
 		flex: 1,
+	},
+	itemWrapper: {
+		width: ITEM_SIZE,
+		justifyContent: 'center',
+		alignItems: 'center',
+		marginRight: ITEM_MARGIN,
 	},
 	text: {
 		fontSize: ITEM_SIZE * 0.8,

@@ -1,6 +1,6 @@
 // Inspiration: https://dribbble.com/shots/2343572-Countdown-timer
 
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Vibration,
   StatusBar,
@@ -67,6 +67,8 @@ export default function App() {
 
 	const scrollX = useSharedValue(0);
 
+	const [duration, setDuration] = useState(timers[0]);
+
 	const onScrollEvent = useAnimatedScrollHandler(event => {
 		scrollX.value = event.contentOffset.x;
 	});
@@ -92,8 +94,13 @@ export default function App() {
 					showsHorizontalScrollIndicator={false}
 					contentContainerStyle={styles.contentContainerStyle}
 					snapToInterval={ITEM_SIZE}
-					decelerationRate='fast'
+					decelerationRate={0.95}
 					onScroll={onScrollEvent}
+					onMomentumScrollEnd={event => {
+						let index = Math.round(event.nativeEvent.contentOffset.x / ITEM_SIZE);
+
+						setDuration(timers[index]);
+					}}
 					renderItem={({item, index}) => {
 						return (
 							<TimeNumber number={item} index={index} scrollX={scrollX}/>

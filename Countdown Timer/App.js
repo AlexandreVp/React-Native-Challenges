@@ -8,12 +8,12 @@ import {
   TextInput,
   Dimensions,
   TouchableOpacity,
-  FlatList,
   Text,
   View,
   StyleSheet,
 } from 'react-native';
-import Animated, {} from 'react-native-reanimated';
+import { FlatList } from 'react-native-gesture-handler';
+import Animated, { interpolate, useAnimatedScrollHandler, useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
 
 
 const { width, height } = Dimensions.get('window');
@@ -26,9 +26,51 @@ const colors = {
 const timers = [...Array(13).keys()].map((i) => (i === 0 ? 1 : i * 5));
 const ITEM_SIZE = width * 0.38;
 const ITEM_SPACING = (width - ITEM_SIZE) / 2;
-const ITEM_MARGIN = ITEM_SIZE / 5;
+
+const AnimatedFlatlist = Animated.createAnimatedComponent(FlatList);
+
+const TimeNumber = ({number, index, scrollX}) => {
+
+	const inputRange = [
+		(index - 1) * ITEM_SIZE,
+		index * ITEM_SIZE,
+		(index + 1) * ITEM_SIZE,
+	];
+
+	const style = useAnimatedStyle(() => {
+		return {
+			opacity: interpolate(
+				scrollX.value,
+				inputRange,
+				[0.4, 1, 0.4]
+			),
+			transform: [
+				{
+					scale: interpolate(
+						scrollX.value,
+						inputRange,
+						[0.7, 1, 0.7]
+					),
+				}
+			]
+		};
+	});
+
+	return (
+		<View style={styles.itemWrapper}>
+			<Animated.Text style={[styles.text, style]}>{number}</Animated.Text>
+		</View>
+	)
+};
 
 export default function App() {
+
+	const scrollX = useSharedValue(0);
+
+	const onScrollEvent = useAnimatedScrollHandler(event => {
+		scrollX.value = event.contentOffset.x;
+	});
+
 	return (
 		<View style={styles.container}>
 			<StatusBar hidden />
@@ -42,20 +84,19 @@ export default function App() {
 				</TouchableOpacity>
 			</Animated.View>
 			<View style={styles.textWrapper}>
-				<FlatList 
+				<AnimatedFlatlist 
 					data={timers}
 					keyExtractor={item => item.toString()}
 					horizontal
 					bounces={false}
 					showsHorizontalScrollIndicator={false}
 					contentContainerStyle={styles.contentContainerStyle}
-					snapToInterval={ITEM_SIZE + ITEM_MARGIN}
+					snapToInterval={ITEM_SIZE}
 					decelerationRate='fast'
-					renderItem={({item}) => {
+					onScroll={onScrollEvent}
+					renderItem={({item, index}) => {
 						return (
-							<View style={styles.itemWrapper}>
-								<Text style={styles.text}>{item}</Text>
-							</View>
+							<TimeNumber number={item} index={index} scrollX={scrollX}/>
 						)
 					}}
 				/>
@@ -94,11 +135,10 @@ const styles = StyleSheet.create({
 		width: ITEM_SIZE,
 		justifyContent: 'center',
 		alignItems: 'center',
-		marginRight: ITEM_MARGIN,
 	},
 	text: {
 		fontSize: ITEM_SIZE * 0.8,
 		color: colors.text,
-		fontWeight: '900',
+		fontWeight: 'bold',
 	}
 });

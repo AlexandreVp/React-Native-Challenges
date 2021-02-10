@@ -1,6 +1,6 @@
 // Inspiration: https://dribbble.com/shots/2343572-Countdown-timer
 
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useRef, useState } from 'react';
 import {
   Vibration,
   StatusBar,
@@ -13,7 +13,7 @@ import {
   StyleSheet,
 } from 'react-native';
 import { FlatList } from 'react-native-gesture-handler';
-import Animated, { interpolate, useAnimatedScrollHandler, useAnimatedStyle, useSharedValue, withSequence, withTiming } from 'react-native-reanimated';
+import Animated, { interpolate, runOnJS, useAnimatedScrollHandler, useAnimatedStyle, useSharedValue, withSequence, withTiming } from 'react-native-reanimated';
 
 
 const { width, height } = Dimensions.get('window');
@@ -70,6 +70,8 @@ export default function App() {
 	const buttonAnimation = useSharedValue(0);
 
 	const [duration, setDuration] = useState(timers[0]);
+	const [enabled, setEnabled] = useState(true);
+	const inputRef = useRef();
 
 	const onScrollEvent = useAnimatedScrollHandler(event => {
 		scrollX.value = event.contentOffset.x;
@@ -77,6 +79,8 @@ export default function App() {
 
 	const timerAnimationCall = useCallback(() => {
 		
+		setEnabled(false);
+
 		buttonAnimation.value = withTiming(1, {
 			duration: 300
 		});
@@ -90,6 +94,7 @@ export default function App() {
 					duration: duration * 1000,
 				}, () => {
 					buttonAnimation.value = withTiming(0);
+					runOnJS(setEnabled)(true);
 				})
 			);
 		}, 300);
@@ -124,6 +129,26 @@ export default function App() {
 		};
 	});
 
+	const countdownTextWrapperStyle = useAnimatedStyle(() => {
+		return {
+			opacity: interpolate(
+				buttonAnimation.value,
+				[0, 1],
+				[0, 1]
+			)
+		};
+	});
+
+	const flatListStyle = useAnimatedStyle(() => {
+		return {
+			opacity: interpolate(
+				buttonAnimation.value,
+				[0, 1],
+				[1, 0]
+			),
+		};
+	});
+
 	return (
 		<View style={styles.container}>
 			<StatusBar hidden />
@@ -141,15 +166,24 @@ export default function App() {
 				</TouchableOpacity>
 			</Animated.View>
 			<View style={styles.textWrapper}>
+				<Animated.View style={[styles.countdownTextWrapper, countdownTextWrapperStyle]}>
+					<TextInput 
+						ref={inputRef}
+						style={styles.text}
+						defaultValue={duration.toString()}
+					/>
+				</Animated.View>
 				<AnimatedFlatlist 
 					data={timers}
 					keyExtractor={item => item.toString()}
 					horizontal
 					bounces={false}
+					style={flatListStyle}
 					showsHorizontalScrollIndicator={false}
 					contentContainerStyle={styles.contentContainerStyle}
 					snapToInterval={ITEM_SIZE}
 					decelerationRate='fast'
+					scrollEnabled={enabled}
 					onScroll={onScrollEvent}
 					onMomentumScrollEnd={event => {
 						let index = Math.round(event.nativeEvent.contentOffset.x / ITEM_SIZE);
@@ -200,6 +234,12 @@ const styles = StyleSheet.create({
 	},
 	itemWrapper: {
 		width: ITEM_SIZE,
+		justifyContent: 'center',
+		alignItems: 'center',
+	},
+	countdownTextWrapper: {
+		position: 'absolute',
+		width,
 		justifyContent: 'center',
 		alignItems: 'center',
 	},

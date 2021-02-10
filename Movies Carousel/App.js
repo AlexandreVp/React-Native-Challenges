@@ -1,7 +1,6 @@
 /**
  * Inspiration: https://dribbble.com/shots/8257559-Movie-2-0
  */
-
 import React, { useRef } from 'react';
 import {
 	StatusBar,
@@ -14,15 +13,12 @@ import {
 	SafeAreaView,
 	Animated
 } from 'react-native';
-import MaskedView from '@react-native-community/masked-view';
-import Svg, { Rect } from 'react-native-svg';
 import { LinearGradient } from 'expo-linear-gradient';
 
 import { getMovies } from './api';
 import Genres from './components/Genres';
 import Rating from './components/Rating';
 
-const AnimatedSvg = Animated.createAnimatedComponent(Svg);
 
 const { width, height } = Dimensions.get('window');
 const SPACING = 10;
@@ -35,6 +31,30 @@ const Loading = () => (
 		<Text style={styles.paragraph}>Loading...</Text>
 	</View>
 );
+
+const BackDrop = ({ movies, scrollX }) => {
+	return (
+		<View style={styles.backDropContainer}>
+			<FlatList 
+				data={movies}
+				keyExtractor={item => item.key}
+				removeClippedSubviews={false}
+				contentContainerStyle={{ width, height: BACKDROP_HEIGHT }}
+				renderItem={({item, index}) => {
+					return (
+						<View removeClippedSubviews={false} style={styles.backDropImageWrapper}>
+							<Image source={{ uri: item.backdrop }} style={styles.backDropImage} resizeMode='cover'/>
+						</View>
+					)
+				}}
+			/>
+			<LinearGradient 
+				colors={['transparent', 'white']}
+				style={styles.linearGradient}
+			/>
+		</View>
+	)
+};
 
 export default function App() {
 
@@ -60,19 +80,17 @@ export default function App() {
 	return (
 		<SafeAreaView style={styles.container}>
 			<StatusBar hidden />
+			<BackDrop movies={movies} scrollX={scrollX}/>
 			<Animated.FlatList
 				showsHorizontalScrollIndicator={false}
 				data={movies}
 				keyExtractor={(item) => item.key}
 				horizontal
-				contentContainerStyle={{
-					alignItems: 'center',
-				}}
 				snapToInterval={ITEM_SIZE}
 				decelerationRate={0}
 				bounces={false}
 				scrollEventThrottle={16}
-				contentContainerStyle={{ justifyContent: 'center', alignItems: 'center', paddingHorizontal: SPACER_ITEM_SIZE}}
+				contentContainerStyle={{ justifyContent: 'center', alignItems: 'center', paddingHorizontal: SPACER_ITEM_SIZE, paddingTop: 150}}
 				onScroll={Animated.event(
 					[{ nativeEvent: { contentOffset: {x: scrollX} } }],
 					{ useNativeDriver: true }
@@ -150,5 +168,27 @@ const styles = StyleSheet.create({
 		alignItems: 'center',
 		backgroundColor: 'white',
 		borderRadius: 34,
+	},
+	backDropContainer: {
+		position: 'absolute',
+		width,
+		height: BACKDROP_HEIGHT
+	},
+	backDropImageWrapper: {
+		position: 'absolute',
+		width,
+		height: BACKDROP_HEIGHT,
+		overflow: 'hidden',
+	},
+	backDropImage: {
+		width: width,
+		height: BACKDROP_HEIGHT,
+		position: 'absolute'
+	},
+	linearGradient: {
+		width: width,
+		height: BACKDROP_HEIGHT,
+		position: 'absolute',
+		bottom: 0
 	}
 });

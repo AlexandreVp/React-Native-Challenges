@@ -28,39 +28,39 @@ const ITEM_SPACING = (width - ITEM_SIZE) / 2;
 
 const AnimatedFlatlist = Animated.createAnimatedComponent(FlatList);
 
-const TimeNumber = ({number, index, scrollX}) => {
+// const TimeNumber = ({number, index, scrollX}) => {
 
-	const inputRange = [
-		(index - 1) * ITEM_SIZE,
-		index * ITEM_SIZE,
-		(index + 1) * ITEM_SIZE,
-	];
+// 	const inputRange = [
+// 		(index - 1) * ITEM_SIZE,
+// 		index * ITEM_SIZE,
+// 		(index + 1) * ITEM_SIZE,
+// 	];
 
-	const style = useAnimatedStyle(() => {
-		return {
-			opacity: interpolate(
-				scrollX.value,
-				inputRange,
-				[0.6, 1, 0.6]
-			),
-			transform: [
-				{
-					scale: interpolate(
-						scrollX.value,
-						inputRange,
-						[0.7, 1, 0.7]
-					),
-				}
-			]
-		};
-	});
+// 	const style = useAnimatedStyle(() => {
+// 		return {
+// 			opacity: interpolate(
+// 				scrollX.value,
+// 				inputRange,
+// 				[0.6, 1, 0.6]
+// 			),
+// 			transform: [
+// 				{
+// 					scale: interpolate(
+// 						scrollX.value,
+// 						inputRange,
+// 						[0.7, 1, 0.7]
+// 					),
+// 				}
+// 			]
+// 		};
+// 	});
 
-	return (
-		<View style={styles.itemWrapper}>
-			<Animated.Text style={[styles.text, style]}>{number}</Animated.Text>
-		</View>
-	)
-};
+// 	return (
+// 		<View style={styles.itemWrapper}>
+// 			<Animated.Text style={[styles.text, style]}>{number}</Animated.Text>
+// 		</View>
+// 	)
+// };
 
 export default function App() {
 
@@ -73,7 +73,7 @@ export default function App() {
 	const [enabled, setEnabled] = useState(true);
 	const textInputRef = useRef();
 
-	const onScrollEvent = useAnimatedScrollHandler(event => {
+	const scrollHandler = useAnimatedScrollHandler(event => {
 		scrollX.value = event.contentOffset.x;
 	});
 
@@ -199,29 +199,56 @@ export default function App() {
 						value={duration.toString()}
 					/>
 				</Animated.View>
-				<AnimatedFlatlist 
-					data={timers}
-					keyExtractor={item => item.toString()}
+				<Animated.ScrollView
 					horizontal
-					bounces={false}
 					style={flatListStyle}
 					showsHorizontalScrollIndicator={false}
 					contentContainerStyle={styles.contentContainerStyle}
 					snapToInterval={ITEM_SIZE}
 					decelerationRate='fast'
 					scrollEnabled={enabled}
-					onScroll={onScrollEvent}
+					onScroll={scrollHandler}
 					onMomentumScrollEnd={event => {
 						let index = Math.round(event.nativeEvent.contentOffset.x / ITEM_SIZE);
 
 						setDuration(timers[index]);
 					}}
-					renderItem={({item, index}) => {
+				
+				>
+					{timers.map((value, index) => {
+
+						const inputRange = [
+							(index - 1) * ITEM_SIZE,
+							index * ITEM_SIZE,
+							(index + 1) * ITEM_SIZE,
+						];
+
+						const style = useAnimatedStyle(() => {
+							return {
+								opacity: interpolate(
+									scrollX.value,
+									inputRange,
+									[0.6, 1, 0.6]
+								),
+								transform: [
+									{
+										scale: interpolate(
+											scrollX.value,
+											inputRange,
+											[0.7, 1, 0.7]
+										),
+									}
+								]
+							};
+						});
+
 						return (
-							<TimeNumber number={item} index={index} scrollX={scrollX}/>
+							<View key={value.toString()} style={styles.itemWrapper}>
+								<Animated.Text style={[styles.text, style]}>{value}</Animated.Text>
+							</View>
 						)
-					}}
-				/>
+					})}
+				</Animated.ScrollView>
 			</View>
 		</View>
 	);

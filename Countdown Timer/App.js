@@ -8,7 +8,6 @@ import {
   TextInput,
   Dimensions,
   TouchableOpacity,
-  Text,
   View,
   StyleSheet,
 } from 'react-native';
@@ -68,18 +67,41 @@ export default function App() {
 	const scrollX = useSharedValue(0);
 	const timerAnimation = useSharedValue(height);
 	const buttonAnimation = useSharedValue(0);
+	const countdownTextWrapperOpacity = useSharedValue(0);
 
 	const [duration, setDuration] = useState(timers[0]);
 	const [enabled, setEnabled] = useState(true);
-	const inputRef = useRef();
+	const textInputRef = useRef();
 
 	const onScrollEvent = useAnimatedScrollHandler(event => {
 		scrollX.value = event.contentOffset.x;
 	});
 
+	let interval;
+	const updateTextHandler = (d) => {
+		"Worklet"
+		interval = setInterval(() => {
+			textInputRef.current.setNativeProps({
+				text: `${--d}`
+			});
+		}, 1000);
+	};
+
+	const clearIntervalHandler = () => {
+		"Worklet"
+		clearInterval(interval);
+
+		textInputRef.current.setNativeProps({
+			text: `${duration}`
+		});
+	};
+
 	const timerAnimationCall = useCallback(() => {
-		
+		countdownTextWrapperOpacity.value = 1;
 		setEnabled(false);
+		textInputRef.current.setNativeProps({
+			text: `${duration}`
+		});
 
 		buttonAnimation.value = withTiming(1, {
 			duration: 300
@@ -89,12 +111,16 @@ export default function App() {
 			timerAnimation.value = withSequence(
 				withTiming(0, {
 					duration: 300
+				}, () => {
+					runOnJS(updateTextHandler)(duration);
 				}),
 				withTiming(height, {
-					duration: duration * 1000,
+					duration: duration * 1000 + 50,
 				}, () => {
 					buttonAnimation.value = withTiming(0);
+					countdownTextWrapperOpacity.value = 0;
 					runOnJS(setEnabled)(true);
+					runOnJS(clearIntervalHandler)();
 				})
 			);
 		}, 300);
@@ -131,11 +157,7 @@ export default function App() {
 
 	const countdownTextWrapperStyle = useAnimatedStyle(() => {
 		return {
-			opacity: interpolate(
-				buttonAnimation.value,
-				[0, 1],
-				[0, 1]
-			)
+			opacity: countdownTextWrapperOpacity.value
 		};
 	});
 
@@ -168,9 +190,10 @@ export default function App() {
 			<View style={styles.textWrapper}>
 				<Animated.View style={[styles.countdownTextWrapper, countdownTextWrapperStyle]}>
 					<TextInput 
-						ref={inputRef}
+						ref={textInputRef}
 						style={styles.text}
-						defaultValue={duration.toString()}
+						editable={false}
+						value={duration.toString()}
 					/>
 				</Animated.View>
 				<AnimatedFlatlist 

@@ -2,7 +2,7 @@
  * Inspiration: https://dribbble.com/shots/8257559-Movie-2-0
  */
 
-import React from 'react';
+import React, { useRef } from 'react';
 import {
 	StatusBar,
 	Text,
@@ -11,12 +11,12 @@ import {
 	FlatList,
 	Dimensions,
 	Image,
-	SafeAreaView
+	SafeAreaView,
+	Animated
 } from 'react-native';
 import MaskedView from '@react-native-community/masked-view';
 import Svg, { Rect } from 'react-native-svg';
 import { LinearGradient } from 'expo-linear-gradient';
-import Animated, {} from 'react-native-reanimated';
 
 import { getMovies } from './api';
 import Genres from './components/Genres';
@@ -37,27 +37,30 @@ const Loading = () => (
 );
 
 export default function App() {
+
 	const [movies, setMovies] = React.useState([]);
+
+	const scrollX = useRef(new Animated.Value(0)).current;
 
 	React.useEffect(() => {
 		const fetchData = async () => {
-			const movies = await getMovies();
-			setMovies(movies);
+			let moviesHelper = await getMovies();
+			setMovies(moviesHelper);
 		};
 
 		if (movies.length === 0) {
-			fetchData(movies);
+			fetchData();
 		}
 	}, [movies]);
 
 	if (movies.length === 0) {
 		return <Loading />;
 	}
-
+		
 	return (
 		<SafeAreaView style={styles.container}>
 			<StatusBar hidden />
-			<FlatList
+			<Animated.FlatList
 				showsHorizontalScrollIndicator={false}
 				data={movies}
 				keyExtractor={(item) => item.key}
@@ -68,18 +71,34 @@ export default function App() {
 				snapToInterval={ITEM_SIZE}
 				decelerationRate={0}
 				bounces={false}
-				renderItem={({ item }) => {
+				scrollEventThrottle={16}
+				contentContainerStyle={{ justifyContent: 'center', alignItems: 'center', paddingHorizontal: SPACER_ITEM_SIZE}}
+				onScroll={Animated.event(
+					[{ nativeEvent: { contentOffset: {x: scrollX} } }],
+					{ useNativeDriver: true }
+				)}
+				renderItem={({ item, index }) => {
+
+					const inputRange = [
+						(index - 1) * ITEM_SIZE,
+						index * ITEM_SIZE,
+						(index + 1) * ITEM_SIZE
+					]
+
+					const translateY = scrollX.interpolate({
+						inputRange,
+						outputRange: [0, -50, 0]
+					})
 
 					return (
+						
 						<View style={{ width: ITEM_SIZE }}>
-							<View
-								style={{
-									marginHorizontal: SPACING,
-									padding: SPACING * 2,
-									alignItems: 'center',
-									backgroundColor: 'white',
-									borderRadius: 34,
-								}}
+							<Animated.View
+								style={[styles.card, {
+									transform: [
+										{ translateY }
+									]
+								}]}
 							>
 								<Image
 									source={{ uri: item.poster }}
@@ -93,9 +112,9 @@ export default function App() {
 								<Text style={{ fontSize: 12 }} numberOfLines={3}>
 									{item.description}
 								</Text>
-							</View>
+							</Animated.View>
 						</View>
-					);
+					)
 				}}
 			/>
 		</SafeAreaView>
@@ -125,4 +144,11 @@ const styles = StyleSheet.create({
 		margin: 0,
 		marginBottom: 10,
 	},
+	card: {
+		marginHorizontal: SPACING,
+		padding: SPACING * 2,
+		alignItems: 'center',
+		backgroundColor: 'white',
+		borderRadius: 34,
+	}
 });

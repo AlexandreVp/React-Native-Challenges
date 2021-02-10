@@ -67,6 +67,7 @@ export default function App() {
 
 	const scrollX = useSharedValue(0);
 	const timerAnimation = useSharedValue(height);
+	const buttonAnimation = useSharedValue(0);
 
 	const [duration, setDuration] = useState(timers[0]);
 
@@ -75,14 +76,23 @@ export default function App() {
 	});
 
 	const timerAnimationCall = useCallback(() => {
-		timerAnimation.value = withSequence(
-			withTiming(0, {
-				duration: 300
-			}),
-			withTiming(height, {
-				duration: duration * 1000,
-			})
-		);
+		
+		buttonAnimation.value = withTiming(1, {
+			duration: 300
+		});
+
+		setTimeout(() => {
+			timerAnimation.value = withSequence(
+				withTiming(0, {
+					duration: 300
+				}),
+				withTiming(height, {
+					duration: duration * 1000,
+				}, () => {
+					buttonAnimation.value = withTiming(0);
+				})
+			);
+		}, 300);
 	}, [duration]);
 
 	const animatedBackgroundStyle = useAnimatedStyle(() => {
@@ -95,21 +105,41 @@ export default function App() {
 		};
 	});
 
+	const buttonContainerStyle = useAnimatedStyle(() => {
+		return {
+			opacity: interpolate(
+				buttonAnimation.value,
+				[0, 1],
+				[1, 0]
+			),
+			transform: [
+				{
+					translateY: interpolate(
+						buttonAnimation.value,
+						[0, 1],
+						[0, 200]
+					)
+				}
+			],
+		};
+	});
+
 	return (
 		<View style={styles.container}>
 			<StatusBar hidden />
 			<Animated.View 
 				style={[StyleSheet.absoluteFillObject, styles.animatedBackground, animatedBackgroundStyle]}
 			/>
-			<View
-				style={[StyleSheet.absoluteFillObject, styles.background]} 
+			<Animated.View
+				style={[StyleSheet.absoluteFillObject, styles.background, buttonContainerStyle]} 
 			>
 				<TouchableOpacity
 					onPress={timerAnimationCall}
+					activeOpacity={0.9}
 				>
 					<View style={styles.roundButton} />
 				</TouchableOpacity>
-			</View>
+			</Animated.View>
 			<View style={styles.textWrapper}>
 				<AnimatedFlatlist 
 					data={timers}

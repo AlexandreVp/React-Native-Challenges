@@ -65,6 +65,9 @@ export default function App() {
 				contentContainerStyle={{
 					alignItems: 'center',
 				}}
+				snapToInterval={ITEM_SIZE}
+				decelerationRate={0}
+				bounces={false}
 				renderItem={({ item }) => {
 
 					return (

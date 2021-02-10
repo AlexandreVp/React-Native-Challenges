@@ -41,10 +41,24 @@ const BackDrop = ({ movies, scrollX }) => {
 				removeClippedSubviews={false}
 				contentContainerStyle={{ width, height: BACKDROP_HEIGHT }}
 				renderItem={({item, index}) => {
+
+					const inputRange = [
+						(index - 1) * ITEM_SIZE,
+						index * ITEM_SIZE
+					];
+
+					const translateX = scrollX.interpolate({
+						inputRange,
+						outputRange: [-width, 0]
+					})
+
 					return (
-						<View removeClippedSubviews={false} style={styles.backDropImageWrapper}>
+						<Animated.View 
+							removeClippedSubviews={false} 
+							style={[styles.backDropImageWrapper, { transform: [{translateX}] }]}
+						>
 							<Image source={{ uri: item.backdrop }} style={styles.backDropImage} resizeMode='cover'/>
-						</View>
+						</Animated.View>
 					)
 				}}
 			/>
@@ -90,7 +104,7 @@ export default function App() {
 				decelerationRate={0}
 				bounces={false}
 				scrollEventThrottle={16}
-				contentContainerStyle={{ justifyContent: 'center', alignItems: 'center', paddingHorizontal: SPACER_ITEM_SIZE, paddingTop: 150}}
+				contentContainerStyle={{ justifyContent: 'center', alignItems: 'center', paddingHorizontal: SPACER_ITEM_SIZE }}
 				onScroll={Animated.event(
 					[{ nativeEvent: { contentOffset: {x: scrollX} } }],
 					{ useNativeDriver: true }
@@ -105,7 +119,7 @@ export default function App() {
 
 					const translateY = scrollX.interpolate({
 						inputRange,
-						outputRange: [0, -50, 0]
+						outputRange: [100, 50, 100]
 					})
 
 					return (
@@ -181,7 +195,7 @@ const styles = StyleSheet.create({
 		overflow: 'hidden',
 	},
 	backDropImage: {
-		width: width,
+		width,
 		height: BACKDROP_HEIGHT,
 		position: 'absolute'
 	},

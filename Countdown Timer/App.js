@@ -94,11 +94,15 @@ export default function App() {
 		textInputRef.current.setNativeProps({
 			text: `${duration}`
 		});
+
+		Vibration.cancel();
+		Vibration.vibrate();
+		setEnabled(true);
 	};
 
 	const timerAnimationCall = useCallback(() => {
-		countdownTextWrapperOpacity.value = 1;
 		setEnabled(false);
+		countdownTextWrapperOpacity.value = 1;
 		textInputRef.current.setNativeProps({
 			text: `${duration}`
 		});
@@ -115,11 +119,10 @@ export default function App() {
 					runOnJS(updateTextHandler)(duration);
 				}),
 				withTiming(height, {
-					duration: duration * 1000 + 50,
+					duration: duration * 1000 + 400,
 				}, () => {
 					buttonAnimation.value = withTiming(0);
-					countdownTextWrapperOpacity.value = 0;
-					runOnJS(setEnabled)(true);
+					countdownTextWrapperOpacity.value = withTiming(0);
 					runOnJS(clearIntervalHandler)();
 				})
 			);

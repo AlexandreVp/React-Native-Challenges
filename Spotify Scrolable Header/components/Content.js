@@ -3,14 +3,34 @@ import {
   StyleSheet, View, Text, ScrollView,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
-import Animated, { useAnimatedScrollHandler } from 'react-native-reanimated';
+import Animated, { Extrapolate, useAnimatedScrollHandler, interpolate, useAnimatedStyle } from 'react-native-reanimated';
 
 import { MAX_HEADER_HEIGHT, HEADER_DELTA } from "./Model";
 import Track from "./Track";
 
 export default ({ album: { artist, tracks }, scrollY }) => {
 
-	const height = MAX_HEADER_HEIGHT;
+	const height = useAnimatedStyle(() => {
+		return {
+			height: interpolate(
+				scrollY.value,
+				[-MAX_HEADER_HEIGHT, 0],
+				[0, MAX_HEADER_HEIGHT],
+				Extrapolate.CLAMP
+			)
+		};
+	});
+
+	const opacity = useAnimatedStyle(() => {
+		return {
+			opacity: interpolate(
+				scrollY.value,
+				[-MAX_HEADER_HEIGHT / 2, 0, MAX_HEADER_HEIGHT / 2],
+				[0, 1, 0],
+				Extrapolate.CLAMP
+			)
+		};
+	});
 
 	const onScrollHandler = useAnimatedScrollHandler(event => {
 		scrollY.value = event.contentOffset.y;
@@ -24,8 +44,8 @@ export default ({ album: { artist, tracks }, scrollY }) => {
 			onScroll={onScrollHandler}
 		>
 			<View style={styles.header}>
-				<View
-				style={[styles.gradient, { height }]}
+				<Animated.View
+					style={[styles.gradient, height]}
 				>
 					<LinearGradient
 						style={StyleSheet.absoluteFill}
@@ -33,9 +53,9 @@ export default ({ album: { artist, tracks }, scrollY }) => {
 						end={[0, 1]}
 						colors={["transparent", "rgba(0, 0, 0, 0.2)", "black"]}
 					/>
-				</View>
+				</Animated.View>
 				<View style={styles.artistContainer}>
-					<Text style={styles.artist}>{artist}</Text>
+					<Animated.Text style={[styles.artist, opacity]}>{artist}</Animated.Text>
 				</View>
 			</View>
 			<View style={styles.tracks}>

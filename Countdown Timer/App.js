@@ -357,7 +357,7 @@ export default function App() {
 	useEffect(() => {
 		const listener = textInputAnimation.addListener(({value}) => {
 			textInputRef.current.setNativeProps({
-				text: Math.ceil(value).toString()
+				text: Math.round(value).toString()
 			})
 		});
 
@@ -394,8 +394,7 @@ export default function App() {
 					duration: duration * 1000,
 					useNativeDriver: true
 				})
-			]),
-			Animated.delay(300)
+			])
 		]).start(() => {
 			Animated.parallel([
 				Animated.timing(buttonAnimation, {

@@ -4,13 +4,7 @@ import { Feather as Icon } from "@expo/vector-icons";
 
 import { Track } from "./Model";
 
-interface TrackProps {
-	track: Track;
-	artist: string;
-	index: number;
-}
-
-export default ({ track, artist, index }: TrackProps) => (
+export default ({ track, artist, index }) => (
 	<View style={styles.row}>
 		<View style={styles.cell}>
 			<Text style={styles.index}>{index}</Text>

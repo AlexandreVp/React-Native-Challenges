@@ -1,6 +1,6 @@
 import * as React from "react";
 import {
-	View, Text, StyleSheet, TouchableWithoutFeedback,
+  View, Text, StyleSheet, TouchableWithoutFeedback,
 } from "react-native";
 
 export const BUTTON_HEIGHT = 48;

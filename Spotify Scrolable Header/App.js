@@ -1,16 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { Asset } from "expo-asset";
 import { StatusBar } from "react-native";
-import { AppLoading } from "expo";
+import AppLoading from 'expo-app-loading';
 
 import Album from "./components/Album";
-import { Album as AlbumModel } from "./components/Model";
 
-const album: AlbumModel = {
+const album = {
 	name: "Remote Control",
 	artist: "Jan Blomqvist",
 	release: 2016,
-	// eslint-disable-next-line global-require
 	cover: require("./assets/Jan-Blomqvist.jpg"),
 	tracks: [
 		{ name: "Stories Over" },
@@ -29,16 +27,20 @@ const album: AlbumModel = {
 };
 
 export default () => {
+
 	const [ready, setReady] = useState(false);
+
 	useEffect(() => {
 		(async () => {
 			await Asset.loadAsync(album.cover);
 			setReady(true);
 		})();
 	});
+
 	if (!ready) {
 		return <AppLoading />;
 	}
+
 	return (
 		<>
 			<StatusBar barStyle="light-content" />

@@ -1,47 +1,25 @@
 import * as React from "react";
 import {
-	StyleSheet, View
+  StyleSheet, View, Text, ScrollView,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
-import Animated from 'react-native-reanimated';
-import { onScroll } from "react-native-redash";
 
-import { Album, MAX_HEADER_HEIGHT } from "./Model";
+import { MAX_HEADER_HEIGHT, HEADER_DELTA } from "./Model";
 import Track from "./Track";
-import ShufflePlay from "./ShufflePlay";
 
-interface ContentProps {
-	album: Album;
-	y: Animated.Value<number>;
-	btnOpacity: Animated.Node<number>;
-}
+export default ({ album: { artist, tracks } }) => {
 
-const { interpolate, Extrapolate, cond, eq } = Animated;
-
-export default ({ album: { artist, tracks }, y, btnOpacity }: ContentProps) => {
-
-	const height = interpolate(y, {
-		inputRange: [-MAX_HEADER_HEIGHT, 0],
-		outputRange: [0, MAX_HEADER_HEIGHT],
-		extrapolate: Extrapolate.CLAMP
-	});
-
-	const opacity = interpolate(y, {
-		inputRange: [-MAX_HEADER_HEIGHT/2, 0, MAX_HEADER_HEIGHT/2],
-		outputRange: [0, 1, 0],
-		extrapolate: Extrapolate.CLAMP
-	});
+	const height = MAX_HEADER_HEIGHT;
 
 	return (
-		<Animated.ScrollView
-			onScroll={onScroll({ y })}
+		<ScrollView
 			style={styles.container}
 			showsVerticalScrollIndicator={false}
 			scrollEventThrottle={1}
 		>
 			<View style={styles.header}>
-				<Animated.View
-					style={[styles.gradient, { height }]}
+				<View
+				style={[styles.gradient, { height }]}
 				>
 					<LinearGradient
 						style={StyleSheet.absoluteFill}
@@ -49,15 +27,12 @@ export default ({ album: { artist, tracks }, y, btnOpacity }: ContentProps) => {
 						end={[0, 1]}
 						colors={["transparent", "rgba(0, 0, 0, 0.2)", "black"]}
 					/>
-				</Animated.View>
+				</View>
 				<View style={styles.artistContainer}>
-					<Animated.Text style={[styles.artist, { opacity }]}>{artist}</Animated.Text>
+					<Text style={styles.artist}>{artist}</Text>
 				</View>
 			</View>
 			<View style={styles.tracks}>
-				<Animated.View style={{ opacity: cond(eq(btnOpacity, 1), 0, 1) }}>
-					<ShufflePlay />
-				</Animated.View>
 				{
 					tracks.map((track, key) => (
 						<Track
@@ -67,7 +42,7 @@ export default ({ album: { artist, tracks }, y, btnOpacity }: ContentProps) => {
 					))
 				}
 			</View>
-		</Animated.ScrollView>
+		</ScrollView>
 	);
 };
 

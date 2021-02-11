@@ -3,19 +3,25 @@ import {
   StyleSheet, View, Text, ScrollView,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
+import Animated, { useAnimatedScrollHandler } from 'react-native-reanimated';
 
 import { MAX_HEADER_HEIGHT, HEADER_DELTA } from "./Model";
 import Track from "./Track";
 
-export default ({ album: { artist, tracks } }) => {
+export default ({ album: { artist, tracks }, scrollY }) => {
 
 	const height = MAX_HEADER_HEIGHT;
 
+	const onScrollHandler = useAnimatedScrollHandler(event => {
+		scrollY.value = event.contentOffset.y;
+	});
+
 	return (
-		<ScrollView
+		<Animated.ScrollView
 			style={styles.container}
 			showsVerticalScrollIndicator={false}
 			scrollEventThrottle={1}
+			onScroll={onScrollHandler}
 		>
 			<View style={styles.header}>
 				<View
@@ -42,7 +48,7 @@ export default ({ album: { artist, tracks } }) => {
 					))
 				}
 			</View>
-		</ScrollView>
+		</Animated.ScrollView>
 	);
 };
 

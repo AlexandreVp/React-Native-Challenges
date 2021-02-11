@@ -1,5 +1,6 @@
 import React from "react";
 import { View, StyleSheet } from "react-native";
+import Animated, { useSharedValue } from "react-native-reanimated";
 
 import { MIN_HEADER_HEIGHT, HEADER_DELTA } from "./Model";
 import Header from "./Header";
@@ -11,11 +12,13 @@ export default ({ album }) => {
 
 	const { artist } = album;
 
+	const scrollY = useSharedValue(0);
+
 	return (
 		<View style={styles.container}>
-			<Cover {...{ album }} />
-			<Content {...{ album }} />
-			<Header {...{ artist }} />
+			<Cover {...{ scrollY, album }} />
+			<Content {...{ scrollY, album }} />
+			<Header {...{ scrollY, artist }} />
 			<View
 				style={{
 				position: "absolute",

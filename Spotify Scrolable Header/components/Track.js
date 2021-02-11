@@ -10,7 +10,7 @@ export default ({ track, artist, index }) => (
 			<Text style={styles.index}>{index}</Text>
 		</View>
 		<View style={[styles.cell, { flex: 1 }]}>
-			<Text style={styles.name}>{track.name}</Text>
+			<Text style={styles.name} numberOfLines={1}>{track.name}</Text>
 			<Text style={styles.artist}>{track.artist || artist}</Text>
 		</View>
 		<View style={styles.cell}>

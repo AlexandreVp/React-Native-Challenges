@@ -45,14 +45,18 @@ const Loading = () => {
 export default () => {
 
     const [images, setImages] = useState(null);
-    const [index, setIndex] = useState(0);
+    const [activeIndex, setActiveIndex] = useState(0);
 
     const topListRef = useRef();
     const bottomListRef = useRef();
 
-    const setActiveIndex = (index) => {
-        setIndex(index);
-        
+    const activeIndexHandler = (index) => {
+        setActiveIndex(index);
+
+        topListRef?.current?.scrollToOffset({
+            offset: index * width,
+            animated: true
+        });
     };
 
     useEffect(() => {
@@ -81,7 +85,7 @@ export default () => {
                 showsHorizontalScrollIndicator={false}
                 decelerationRate={0}
                 onMomentumScrollEnd={ev => {
-                    setActiveIndex(Math.round(ev.nativeEvent.contentOffset.x / width));
+                    activeIndexHandler(Math.round(ev.nativeEvent.contentOffset.x / width));
                 }}
                 renderItem={({ item }) => {
                     return (
@@ -103,13 +107,18 @@ export default () => {
                 contentContainerStyle={styles.contentContainerStyle}
                 horizontal
                 showsHorizontalScrollIndicator={false}
-                renderItem={({ item }) => {
+                renderItem={({ item, index }) => {
                     return (
-                        <Image 
-                            source={{ uri: item.src.tiny }}
-                            style={styles.image}
-                            resizeMode='cover'
-                        />
+                        <TouchableOpacity
+                            onPress={() => activeIndexHandler(index)}
+                            activeOpacity={0.7}
+                        >
+                            <Image 
+                                source={{ uri: item.src.tiny }}
+                                style={[styles.image, , index === activeIndex ? styles.active : null]}
+                                resizeMode='cover'
+                            />
+                        </TouchableOpacity>
                     )
                 }}
             />
@@ -139,5 +148,9 @@ const styles = StyleSheet.create({
         height: IMAGE_SIZE,
         borderRadius: 12,
         marginRight: SPACING
+    },
+    active: {
+        borderWidth: 2,
+        borderColor: '#ffffff'
     }
 });

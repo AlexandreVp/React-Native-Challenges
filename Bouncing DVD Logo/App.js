@@ -1,7 +1,13 @@
-import React from 'react';
-import { View, StyleSheet, Text } from 'react-native';
+import React, { useEffect } from 'react';
+import { View, StyleSheet, Text, Dimensions } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
+import Animated, { useAnimatedStyle, useSharedValue, withTiming, withRepeat, Easing } from 'react-native-reanimated';
  
+const { width, height } = Dimensions.get('window');
+const LOGO_WIDTH = 122;
+const LOGO_HEIGHT = 80;
+const DURATION = 3 * 1000;
+
 const Logo = () => {
 	return (
 		<View style={styles.logoWrapper}>
@@ -13,10 +19,47 @@ const Logo = () => {
 
 const App = () => {
 
+	const translateX = useSharedValue(0);
+	const translateY = useSharedValue(0);
+
+	useEffect(() => {
+		translateX.value = withRepeat(
+			withTiming(width - LOGO_WIDTH, {
+				duration: DURATION,
+				easing: Easing.linear
+			}),
+			-1,
+			true
+		);
+		translateY.value = withRepeat(
+			withTiming(height - LOGO_HEIGHT, {
+				duration: DURATION * 1.6,
+				easing: Easing.linear
+			}),
+			-1,
+			true
+		)
+	})
+
+	const style = useAnimatedStyle(() => {
+		return {
+			transform: [
+				{
+					translateX: translateX.value
+				},
+				{
+					translateY: translateY.value
+				}
+			]
+		};
+	});
+
 	return (
 		<View style={styles.container}>
 			<StatusBar hidden/>
-			<Logo />
+			<Animated.View style={[style]}>
+				<Logo />
+			</Animated.View>
 		</View>
 	);
 }
@@ -25,11 +68,10 @@ const styles = StyleSheet.create({
 	container: {
 		flex: 1,
 		// backgroundColor: '#000000',
-		justifyContent: 'center',
-		alignItems: 'center'
 	},
 	logoWrapper: {
-		width: 122,
+		width: LOGO_WIDTH,
+		height: LOGO_HEIGHT,
 		justifyContent: 'center',
 		alignItems: 'center',
 	},
@@ -44,7 +86,7 @@ const styles = StyleSheet.create({
 		fontWeight: 'bold',
 		fontStyle: 'italic',
 		letterSpacing: 10,
-		lineHeight: 25
+		lineHeight: 25,
 	}
 })
 

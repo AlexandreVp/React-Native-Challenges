@@ -46,7 +46,7 @@ export default () => {
 
     useEffect(() => {
         const fetchImages = async () => {
-            const images = fetchImagesFromPexels();
+            const images = await fetchImagesFromPexels();
 
             setImages(images);
         };
@@ -61,6 +61,20 @@ export default () => {
     return (
         <View style={styles.container}>
             <StatusBar hidden />
+            <FlatList 
+                data={images}
+                keyExtractor={item => item.id.toString()}
+                renderItem={({ item }) => {
+                    return (
+                        <View style={styles.imageWrapper}>
+                            <Image 
+                                source={{ uri: item.src.portrait }}
+                                style={[StyleSheet.absoluteFillObject]}
+                            />
+                        </View>
+                    )
+                }}
+            />
         </View>
     );
 };
@@ -69,5 +83,9 @@ const styles = StyleSheet.create({
 	container: {
 		flex: 1,
         backgroundColor: '#000000'
-	}
+	},
+    imageWrapper: {
+        width,
+        height
+    }
 });

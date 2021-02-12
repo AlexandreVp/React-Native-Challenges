@@ -86,7 +86,7 @@ export default () => {
     }
 
     return (
-        <View style={styles.container}>
+        <SafeAreaView style={styles.container}>
             <StatusBar hidden />
             <FlatList
                 ref={topListRef}
@@ -134,7 +134,7 @@ export default () => {
                     )
                 }}
             />
-        </View>
+        </SafeAreaView>
     );
 };
 

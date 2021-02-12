@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
     StatusBar,
     FlatList,
@@ -45,6 +45,15 @@ const Loading = () => {
 export default () => {
 
     const [images, setImages] = useState(null);
+    const [index, setIndex] = useState(0);
+
+    const topListRef = useRef();
+    const bottomListRef = useRef();
+
+    const setActiveIndex = (index) => {
+        setIndex(index);
+        
+    };
 
     useEffect(() => {
         const fetchImages = async () => {
@@ -63,13 +72,17 @@ export default () => {
     return (
         <View style={styles.container}>
             <StatusBar hidden />
-            <FlatList 
+            <FlatList
+                ref={topListRef}
                 data={images}
                 keyExtractor={item => item.id.toString()}
                 horizontal
                 pagingEnabled
                 showsHorizontalScrollIndicator={false}
                 decelerationRate={0}
+                onMomentumScrollEnd={ev => {
+                    setActiveIndex(Math.round(ev.nativeEvent.contentOffset.x / width));
+                }}
                 renderItem={({ item }) => {
                     return (
                         <View style={styles.imageWrapper}>
@@ -82,7 +95,8 @@ export default () => {
                     )
                 }}
             />
-            <FlatList 
+            <FlatList
+                ref={bottomListRef}
                 data={images}
                 keyExtractor={item => item.id.toString()}
                 style={styles.flatList}

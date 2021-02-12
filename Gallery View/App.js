@@ -57,6 +57,18 @@ export default () => {
             offset: index * width,
             animated: true
         });
+
+        if (index * (IMAGE_SIZE + SPACING) - IMAGE_SIZE / 2 > width / 2) {
+            bottomListRef?.current?.scrollToOffset({
+                offset: index * (IMAGE_SIZE + SPACING) - width / 2 + IMAGE_SIZE / 2,
+                animated: true
+            });
+        } else {
+            bottomListRef?.current?.scrollToOffset({
+                offset: 0,
+                animated: true
+            });
+        }
     };
 
     useEffect(() => {

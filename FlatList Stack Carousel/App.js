@@ -70,6 +70,7 @@ const OVERFLOW_HEIGHT = 90;
 const SPACING = 10;
 const ITEM_WIDTH = width * 0.76;
 const ITEM_HEIGHT = ITEM_WIDTH * 1.7;
+const VISIBLE_ITEMS = 3;
 
 const OverflowItems = ({ data }) => {
 
@@ -144,10 +145,34 @@ export default function App() {
 					)
 				}}
 				renderItem={({item, index}) => {
+
+					const inputRange = [index - 1, index, index + 1];
+
+					const style = {
+						transform: [
+							{
+								translateX: scrollXAnimated.interpolate({
+									inputRange,
+									outputRange: [50, 0, -100]
+								})
+							},
+							{
+								scale: scrollXAnimated.interpolate({
+									inputRange,
+									outputRange: [0.8, 1, 1.3]
+								})
+							}
+						],
+						opacity: scrollXAnimated.interpolate({
+							inputRange,
+							outputRange: [1 - 1/VISIBLE_ITEMS, 1, 0]
+						})
+					}
+
 					return (
-						<View style={styles.itemWrapper}>
+						<Animated.View style={[styles.itemWrapper, style]}>
 							<Image source={{uri: item.poster}} style={styles.image}/>
-						</View>
+						</Animated.View>
 					)
 				}}
 			/>

@@ -66,7 +66,7 @@ const DATA = [
 ];
 
 const { width } = Dimensions.get('screen');
-const OVERFLOW_HEIGHT = 100;
+const OVERFLOW_HEIGHT = 90;
 const SPACING = 10;
 const ITEM_WIDTH = width * 0.76;
 const ITEM_HEIGHT = ITEM_WIDTH * 1.7;
@@ -110,6 +110,20 @@ export default function App() {
 		<SafeAreaView style={styles.container}>
 			<StatusBar hidden/>
 			<OverflowItems data={data}/>
+			<FlatList 
+				data={data}
+				keyExtractor={(_, index) => index.toString()}
+				horizontal
+				inverted
+				contentContainerStyle={styles.contentContainerStyle}
+				renderItem={({item, index}) => {
+					return (
+						<View style={styles.itemWrapper}>
+							<Image source={{uri: item.poster}} style={styles.image}/>
+						</View>
+					)
+				}}
+			/>
 		</SafeAreaView>
 	);
 };
@@ -145,4 +159,17 @@ const styles = StyleSheet.create({
 		height: OVERFLOW_HEIGHT,
 		overflow: 'hidden',
 	},
+	contentContainerStyle: {
+		flex: 1,
+		justifyContent: 'center',
+		padding: SPACING * 2
+	},
+	itemWrapper: {
+		position: 'absolute',
+		left: -ITEM_WIDTH / 2
+	},
+	image: {
+		width: ITEM_WIDTH,
+		height: ITEM_HEIGHT
+	}
 });

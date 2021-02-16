@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   StatusBar,
   Image,
@@ -104,7 +104,18 @@ const OverflowItems = ({ data }) => {
 
 export default function App() {
 	
-	const [data, setData] = React.useState(DATA);
+	const [data, setData] = useState(DATA);
+	const [index, setIndex] = useState(0);
+
+	const scrollXIndex = useRef(new Animated.Value(0)).current;
+	const scrollXAnimated = useRef(new Animated.Value(0)).current;
+
+	useEffect(() => {
+		Animated.spring(scrollXAnimated, {
+			toValue: scrollXIndex,
+			useNativeDriver: true
+		}).start();
+	}, [scrollXIndex]);
 
 	return (
 		<SafeAreaView style={styles.container}>

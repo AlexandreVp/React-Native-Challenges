@@ -116,6 +116,22 @@ export default function App() {
 				horizontal
 				inverted
 				contentContainerStyle={styles.contentContainerStyle}
+				scrollEnabled={false}
+				removeClippedSubviews={false}
+				CellRendererComponent={({item, index, children, style, ...props}) => {
+
+					//changing the zIndex
+					const newStyle = [
+						style,
+						{ zIndex: data.length - index, elevation: data.length - index },
+					];
+
+					return (
+						<View style={newStyle} index={index} {...props}>
+							{children}
+						</View>
+					)
+				}}
 				renderItem={({item, index}) => {
 					return (
 						<View style={styles.itemWrapper}>
@@ -162,7 +178,7 @@ const styles = StyleSheet.create({
 	contentContainerStyle: {
 		flex: 1,
 		justifyContent: 'center',
-		padding: SPACING * 2
+		padding: SPACING * 2,
 	},
 	itemWrapper: {
 		position: 'absolute',

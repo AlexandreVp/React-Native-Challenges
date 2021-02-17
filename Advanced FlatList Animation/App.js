@@ -120,7 +120,7 @@ const Item = ({ imageUri, heading, description, index, scrollX }) => {
 			{
 				translateX: scrollX.interpolate({
 					inputRange,
-					outputRange: [width * 0.2, 0, -width * 0.2]
+					outputRange: [width * 0.1, 0, -width * 0.1]
 				})
 			}
 		],
@@ -135,7 +135,7 @@ const Item = ({ imageUri, heading, description, index, scrollX }) => {
 			{
 				translateX: scrollX.interpolate({
 					inputRange,
-					outputRange: [width * 0.6, 0, -width * 0.6]
+					outputRange: [width * 0.7, 0, -width * 0.7]
 				})
 			}
 		],
@@ -298,12 +298,11 @@ const styles = StyleSheet.create({
 	},
 	paginationIndicator: {
 		position: 'absolute',
-		alignSelf: 'center',
-		width: DOT_SIZE * 0.7,
-		height: DOT_SIZE * 0.7,
-		borderRadius: DOT_SIZE * 0.7,
-		left: DOT_SIZE / 2 - DOT_SIZE * 0.35,
-		borderWidth: 1
+		width: DOT_SIZE,
+		height: DOT_SIZE,
+		borderRadius: DOT_SIZE / 2,
+		borderWidth: 1,
+		borderColor: '#ccc',
 	},
 	paginationDotContainer: {
 		width: DOT_SIZE,

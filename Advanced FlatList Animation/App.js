@@ -24,6 +24,12 @@ const Item = ({ imageUri, heading, description, index, scrollX }) => {
 		(index + 1) * width
 	];
 
+	const inputRangeOpacity = [
+		(index - 0.3) * width,
+		index * width,
+		(index + 0.3) * width
+	];
+
 	const imageStyle = {
 		transform: [
 			{
@@ -34,6 +40,36 @@ const Item = ({ imageUri, heading, description, index, scrollX }) => {
 			}
 		]
 	}
+
+	const headingTextStyle = {
+		transform: [
+			{
+				translateX: scrollX.interpolate({
+					inputRange,
+					outputRange: [width * 0.2, 0, -width * 0.2]
+				})
+			}
+		],
+		opacity: scrollX.interpolate({
+			inputRange: inputRangeOpacity,
+			outputRange: [0, 1, 0]
+		})
+	}
+
+	const descriptionTextStyle = {
+		transform: [
+			{
+				translateX: scrollX.interpolate({
+					inputRange,
+					outputRange: [width * 0.6, 0, -width * 0.6]
+				})
+			}
+		],
+		opacity: scrollX.interpolate({
+			inputRange: inputRangeOpacity,
+			outputRange: [0, 1, 0]
+		})
+	}
 	
 	return (
 		<View style={styles.itemStyle}>
@@ -42,8 +78,8 @@ const Item = ({ imageUri, heading, description, index, scrollX }) => {
 				style={[styles.imageStyle, imageStyle]}
 			/>
 			<View style={styles.textContainer}>
-				<Text style={[styles.heading]}>{heading}</Text>
-				<Text style={[styles.description]}>{description}</Text>
+				<Animated.Text style={[styles.heading, headingTextStyle]}>{heading}</Animated.Text>
+				<Animated.Text style={[styles.description, descriptionTextStyle]}>{description}</Animated.Text>
 			</View>
 		</View>
 	);

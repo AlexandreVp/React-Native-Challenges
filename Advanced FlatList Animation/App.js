@@ -1,5 +1,5 @@
 import { StatusBar } from 'expo-status-bar';
-import React from 'react';
+import React, { useRef } from 'react';
 import {
 	StyleSheet,
 	Text,
@@ -51,18 +51,27 @@ const Pagination = () => {
 
 export default function App() {
 
+	const scrollX = useRef(new Animated.Value(0)).current;
+
 	return (
 		<View style={styles.container}>
 			<StatusBar style='auto' hidden />
-			<FlatList
+			<Animated.FlatList
 				data={data}
 				keyExtractor={(item) => item.key}
-				renderItem={({ item, index }) => (
-					<Item {...item} />
-				)}
+				renderItem={({ item, index }) => {
+					return (
+						<Item {...item} index={index} scrollX={scrollX}/>
+					)
+				}}
 				pagingEnabled
 				showsHorizontalScrollIndicator={false}
 				horizontal
+				onScroll={Animated.event(
+					[{ nativeEvent: { contentOffset: {x: scrollX}}}],
+					{ useNativeDriver: true }
+				)}
+				scrollEventThrottle={16}
 			/>
 			<Image
 				style={styles.logo}

@@ -120,7 +120,7 @@ const OverflowItems = ({ data, scrollXAnimated }) => {
 export default function App() {
 	
 	const [data, setData] = useState(DATA);
-	const [index, setIndex] = useState(0);
+	const [indexState, setIndex] = useState(0);
 
 	const scrollXIndex = useRef(new Animated.Value(0)).current;
 	const scrollXAnimated = useRef(new Animated.Value(0)).current;
@@ -137,13 +137,22 @@ export default function App() {
 		}).start();
 	}, [scrollXIndex]);
 
+	useEffect(() => {
+		if (indexState === data.length - VISIBLE_ITEMS) {
+			//get new data
+			//fetch more data
+			const newData = [...data, ...data];
+			setData(newData);
+		}
+	});
+
 	return (
 		<FlingGestureHandler
 			key='left'
 			direction={Directions.LEFT}
 			onHandlerStateChange={ev => {
-				if (ev.nativeEvent.state === State.END && index !== data.length - 1) {
-					setActiveIndex(index + 1);
+				if (ev.nativeEvent.state === State.END && indexState !== data.length - 1) {
+					setActiveIndex(indexState + 1);
 				}
 			}}
 		>
@@ -151,8 +160,8 @@ export default function App() {
 				key='right'
 				direction={Directions.RIGHT}
 				onHandlerStateChange={ev => {
-					if (ev.nativeEvent.state === State.END && index !== 0) {
-						setActiveIndex(index - 1);
+					if (ev.nativeEvent.state === State.END && indexState !== 0) {
+						setActiveIndex(indexState - 1);
 					}
 				}}
 			>
@@ -206,11 +215,17 @@ export default function App() {
 								})
 							}
 
-							return (
-								<Animated.View style={[styles.itemWrapper, style]}>
-									<Image source={{uri: item.poster}} style={styles.image}/>
-								</Animated.View>
-							)
+							if (index == indexState - 1 || index == indexState || index == indexState + 1 || index == indexState + 2) {
+								return (
+									
+									<Animated.View style={[styles.itemWrapper, style]}>
+										<Image source={{uri: item.poster}} style={styles.image}/>
+									</Animated.View>
+								)
+							}
+							else {
+								return null;
+							}
 						}}
 					/>
 				</SafeAreaView>

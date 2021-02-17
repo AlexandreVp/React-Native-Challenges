@@ -159,19 +159,37 @@ const Item = ({ imageUri, heading, description, index, scrollX }) => {
 	);
 };
 
-const Pagination = () => {
+const Pagination = ({ scrollX }) => {
+
+	const inputRange = [
+		-width,
+		0,
+		width
+	];
+
+	const style = {
+		transform: [
+			{
+				translateX: scrollX.interpolate({
+					inputRange,
+					outputRange: [-DOT_SIZE, 0, DOT_SIZE]
+				})
+			}
+		]
+	}
 
 	return (
 		<View style={[styles.pagination]}>
-			{data.map((item) => {
-				return (
-					<View key={item.key} style={styles.paginationDotContainer}>
-						<View
-							style={[styles.paginationDot, { backgroundColor: item.color }]}
-						/>
-					</View>
-				);
-			})}
+			<Animated.View style={[styles.paginationIndicator, style]} />
+				{data.map((item) => {
+					return (
+						<View key={item.key} style={styles.paginationDotContainer}>
+							<View
+								style={[styles.paginationDot, { backgroundColor: item.color }]}
+							/>
+						</View>
+					);
+				})}
 		</View>
 	);
 };
@@ -206,7 +224,7 @@ export default function App() {
 				style={styles.logo}
 				source={require('./assets/ue_black_logo.png')}
 			/>
-			<Pagination />
+			<Pagination scrollX={scrollX}/>
 			<Ticker scrollX={scrollX}/>
 		</View>
 	);
@@ -278,10 +296,19 @@ const styles = StyleSheet.create({
 		height: DOT_SIZE * 0.3,
 		borderRadius: DOT_SIZE * 0.15,
 	},
+	paginationIndicator: {
+		position: 'absolute',
+		alignSelf: 'center',
+		width: DOT_SIZE * 0.7,
+		height: DOT_SIZE * 0.7,
+		borderRadius: DOT_SIZE * 0.7,
+		left: DOT_SIZE / 2 - DOT_SIZE * 0.35,
+		borderWidth: 1
+	},
 	paginationDotContainer: {
 		width: DOT_SIZE,
 		alignItems: 'center',
-		justifyContent: 'center',
+		justifyContent: 'center'
 	},
 	tickerContainer: {
 		position: 'absolute',

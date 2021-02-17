@@ -16,6 +16,7 @@ const LOGO_WIDTH = 220;
 const LOGO_HEIGHT = 40;
 const DOT_SIZE = 40;
 const TICKER_HEIGHT = 40;
+const CIRCLE_SIZE = width * 0.6;
 
 const Ticker = ({ scrollX }) => {
 
@@ -45,6 +46,46 @@ const Ticker = ({ scrollX }) => {
 					)
 				})}
 			</Animated.View>
+		</View>
+	)
+};
+
+const Circle = ({ scrollX }) => {
+	
+	return (
+		<View style={[StyleSheet.absoluteFillObject, styles.circleContainer]}>
+			{data.map(({color}, index) => {
+
+				const inputRange = [
+					(index - 0.55) * width,
+					index * width,
+					(index + 0.55) * width
+				];
+
+				const style = {
+					transform: [
+						{
+							scale: scrollX.interpolate({
+								inputRange,
+								outputRange: [0, 1, 0],
+								extrapolate: 'clamp'
+							})
+						}
+					],
+					opacity: scrollX.interpolate({
+						inputRange,
+						outputRange: [0, 0.2, 0],
+						extrapolate: 'clamp'
+					})
+				}
+
+				return (
+					<Animated.View 
+						key={index.toString()}
+						style={[styles.circle, style, {backgroundColor: color}]}
+					/>
+				)
+			})}
 		</View>
 	)
 };
@@ -142,6 +183,7 @@ export default function App() {
 	return (
 		<View style={styles.container}>
 			<StatusBar style='auto' hidden />
+			<Circle scrollX={scrollX}/>
 			<Animated.FlatList
 				data={data}
 				keyExtractor={(item) => item.key}
@@ -254,5 +296,16 @@ const styles = StyleSheet.create({
 		textTransform: 'uppercase',
 		letterSpacing: -1,
 		fontWeight: 'bold'
+	},
+	circleContainer: {
+		alignItems: 'center',
+		justifyContent: 'center'
+	},
+	circle: {
+		width: CIRCLE_SIZE,
+		height: CIRCLE_SIZE,
+		borderRadius: CIRCLE_SIZE,
+		position: 'absolute',
+		top: '15%'
 	}
 });

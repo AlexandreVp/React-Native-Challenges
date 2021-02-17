@@ -134,7 +134,15 @@ export default function App() {
 				}
 			}}
 		>
-			<FlingGestureHandler>
+			<FlingGestureHandler
+				key='right'
+				direction={Directions.RIGHT}
+				onHandlerStateChange={ev => {
+					if (ev.nativeEvent.state === State.END && index !== 0) {
+						setActiveIndex(index - 1);
+					}
+				}}
+			>
 				<SafeAreaView style={styles.container}>
 					<StatusBar hidden/>
 					<OverflowItems data={data}/>

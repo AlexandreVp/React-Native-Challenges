@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
   StatusBar,
   Image,
@@ -112,6 +112,11 @@ export default function App() {
 	const scrollXIndex = useRef(new Animated.Value(0)).current;
 	const scrollXAnimated = useRef(new Animated.Value(0)).current;
 
+	const setActiveIndex = useCallback((activeIndex) => {
+		setIndex(activeIndex);
+		scrollXIndex.setValue(activeIndex);
+	}, [])
+
 	useEffect(() => {
 		Animated.spring(scrollXAnimated, {
 			toValue: scrollXIndex,
@@ -124,8 +129,8 @@ export default function App() {
 			key='left'
 			direction={Directions.LEFT}
 			onHandlerStateChange={ev => {
-				if (ev.nativeEvent.state === State.END) {
-					
+				if (ev.nativeEvent.state === State.END && index !== data.length - 1) {
+					setActiveIndex(index + 1);
 				}
 			}}
 		>

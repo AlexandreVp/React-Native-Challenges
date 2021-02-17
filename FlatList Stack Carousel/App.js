@@ -11,6 +11,7 @@ import {
   SafeAreaView,
 } from 'react-native';
 import { EvilIcons } from '@expo/vector-icons';
+import { Directions, FlingGestureHandler, State } from 'react-native-gesture-handler';
 
 
 const DATA = [
@@ -119,64 +120,76 @@ export default function App() {
 	}, [scrollXIndex]);
 
 	return (
-		<SafeAreaView style={styles.container}>
-			<StatusBar hidden/>
-			<OverflowItems data={data}/>
-			<FlatList 
-				data={data}
-				keyExtractor={(_, index) => index.toString()}
-				horizontal
-				inverted
-				contentContainerStyle={styles.contentContainerStyle}
-				scrollEnabled={false}
-				removeClippedSubviews={false}
-				CellRendererComponent={({item, index, children, style, ...props}) => {
+		<FlingGestureHandler
+			key='left'
+			direction={Directions.LEFT}
+			onHandlerStateChange={ev => {
+				if (ev.nativeEvent.state === State.END) {
+					
+				}
+			}}
+		>
+			<FlingGestureHandler>
+				<SafeAreaView style={styles.container}>
+					<StatusBar hidden/>
+					<OverflowItems data={data}/>
+					<FlatList 
+						data={data}
+						keyExtractor={(_, index) => index.toString()}
+						horizontal
+						inverted
+						contentContainerStyle={styles.contentContainerStyle}
+						scrollEnabled={false}
+						removeClippedSubviews={false}
+						CellRendererComponent={({item, index, children, style, ...props}) => {
 
-					//changing the zIndex
-					const newStyle = [
-						style,
-						{ zIndex: data.length - index, elevation: data.length - index },
-					];
+							//changing the zIndex
+							const newStyle = [
+								style,
+								{ zIndex: data.length - index, elevation: data.length - index },
+							];
 
-					return (
-						<View style={newStyle} index={index} {...props}>
-							{children}
-						</View>
-					)
-				}}
-				renderItem={({item, index}) => {
+							return (
+								<View style={newStyle} index={index} {...props}>
+									{children}
+								</View>
+							)
+						}}
+						renderItem={({item, index}) => {
 
-					const inputRange = [index - 1, index, index + 1];
+							const inputRange = [index - 1, index, index + 1];
 
-					const style = {
-						transform: [
-							{
-								translateX: scrollXAnimated.interpolate({
+							const style = {
+								transform: [
+									{
+										translateX: scrollXAnimated.interpolate({
+											inputRange,
+											outputRange: [50, 0, -100]
+										})
+									},
+									{
+										scale: scrollXAnimated.interpolate({
+											inputRange,
+											outputRange: [0.8, 1, 1.3]
+										})
+									}
+								],
+								opacity: scrollXAnimated.interpolate({
 									inputRange,
-									outputRange: [50, 0, -100]
-								})
-							},
-							{
-								scale: scrollXAnimated.interpolate({
-									inputRange,
-									outputRange: [0.8, 1, 1.3]
+									outputRange: [1 - 1/VISIBLE_ITEMS, 1, 0]
 								})
 							}
-						],
-						opacity: scrollXAnimated.interpolate({
-							inputRange,
-							outputRange: [1 - 1/VISIBLE_ITEMS, 1, 0]
-						})
-					}
 
-					return (
-						<Animated.View style={[styles.itemWrapper, style]}>
-							<Image source={{uri: item.poster}} style={styles.image}/>
-						</Animated.View>
-					)
-				}}
-			/>
-		</SafeAreaView>
+							return (
+								<Animated.View style={[styles.itemWrapper, style]}>
+									<Image source={{uri: item.poster}} style={styles.image}/>
+								</Animated.View>
+							)
+						}}
+					/>
+				</SafeAreaView>
+			</FlingGestureHandler>
+		</FlingGestureHandler>
 	);
 };
 

@@ -48,6 +48,22 @@ const Indicator = ({ scrollX }) => {
 	)
 };
 
+const Backdrop = ({ scrollX }) => {
+
+	const style = {
+		backgroundColor: scrollX.interpolate({
+			inputRange: bgs.map((_, index) => index * width),
+			outputRange: bgs.map(bg => bg)
+		})
+	}
+
+	return (
+		<Animated.View 
+			style={[StyleSheet.absoluteFillObject, style]}
+		/>
+	)
+};
+
 export default function App() {
 
 	const scrollX = useRef(new Animated.Value(0)).current;
@@ -55,7 +71,8 @@ export default function App() {
 	return (
 		<View style={styles.container}>
 			<StatusBar hidden />
-			<Animated.FlatList 
+			<Backdrop scrollX={scrollX}/>
+			<Animated.FlatList
 				data={DATA}
 				keyExtractor={item => item.key}
 				horizontal
@@ -63,6 +80,7 @@ export default function App() {
 				showsHorizontalScrollIndicator={false}
 				pagingEnabled
 				bounces={false}
+				scrollEventThrottle={16}
 				onScroll={Animated.event(
 					[{nativeEvent: {contentOffset: {x: scrollX}}}],
 					{useNativeDriver: false} //nativeDriver does not support backgroundColor changes

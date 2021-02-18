@@ -89,6 +89,15 @@ const Backdrop = ({ scrollX }) => {
 	)
 };
 
+const Square = ({ scrollX }) => {
+
+	return (
+		<Animated.View 
+			style={styles.square}
+		/>
+	)
+};
+
 export default function App() {
 
 	const scrollX = useRef(new Animated.Value(0)).current;
@@ -97,6 +106,7 @@ export default function App() {
 		<View style={styles.container}>
 			<StatusBar hidden />
 			<Backdrop scrollX={scrollX}/>
+			<Square scrollX={scrollX}/>
 			<Animated.FlatList
 				data={DATA}
 				keyExtractor={item => item.key}
@@ -178,5 +188,17 @@ const styles = StyleSheet.create({
 		position: 'absolute',
 		bottom: 50,
 		flexDirection: 'row'
+	},
+	square: {
+		width: height,
+		height: height,
+		backgroundColor: '#ffffff',
+		borderRadius: 86,
+		position: 'absolute',
+		top: -height * 0.6,
+		left: -height * 0.3,
+		transform: [
+			{ rotate: '35deg' }
+		]
 	}
 });

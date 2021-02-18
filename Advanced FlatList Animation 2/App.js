@@ -61,6 +61,8 @@ export default function App() {
 				horizontal
 				contentContainerStyle={styles.contentContainerStyle}
 				showsHorizontalScrollIndicator={false}
+				pagingEnabled
+				bounces={false}
 				onScroll={Animated.event(
 					[{nativeEvent: {contentOffset: {x: scrollX}}}],
 					{useNativeDriver: false} //nativeDriver does not support backgroundColor changes

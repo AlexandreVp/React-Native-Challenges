@@ -35,8 +35,15 @@ const DATA = [
 const Indicator = ({ scrollX }) => {
 
 	return (
-		<View>
-
+		<View style={styles.indicatorWrapper}>
+			{DATA.map((_, index) => {
+				return (
+					<View
+						key={index.toString()}
+						style={styles.indicator}
+					/>
+				)
+			})}
 		</View>
 	)
 };
@@ -59,7 +66,7 @@ export default function App() {
 					{useNativeDriver: false} //nativeDriver does not support backgroundColor changes
 				)}
 				renderItem={({item}) => {
-					
+
 					return (
 						<View style={styles.itemWrapper}>
 							<View style={styles.imageWrapper}>
@@ -112,5 +119,17 @@ const styles = StyleSheet.create({
 	description: {
 		fontWeight: '300',
 		fontSize: 16
+	},
+	indicator: {
+		width: 10,
+		height: 10,
+		borderRadius: 5,
+		backgroundColor: '#333',
+		margin: 10
+	},
+	indicatorWrapper: {
+		position: 'absolute',
+		bottom: 100,
+		flexDirection: 'row'
 	}
 });

@@ -34,13 +34,38 @@ const DATA = [
 
 const Indicator = ({ scrollX }) => {
 
+
 	return (
 		<View style={styles.indicatorWrapper}>
 			{DATA.map((_, index) => {
+
+				const inputRange = [
+					(index - 1) * width,
+					index * width,
+					(index + 1) * width
+				];
+
+				const style = {
+					transform: [
+						{
+							scale: scrollX.interpolate({
+								inputRange,
+								outputRange: [0.8, 1.4, 0.8],
+								extrapolate: 'clamp'
+							})
+						}
+					],
+					opacity: scrollX.interpolate({
+						inputRange,
+						outputRange: [0.5, 1, 0.5],
+						extrapolate: 'clamp'
+					})
+				}
+
 				return (
-					<View
+					<Animated.View
 						key={index.toString()}
-						style={styles.indicator}
+						style={[styles.indicator, style]}
 					/>
 				)
 			})}
@@ -146,7 +171,7 @@ const styles = StyleSheet.create({
 		width: 10,
 		height: 10,
 		borderRadius: 5,
-		backgroundColor: '#333',
+		backgroundColor: '#ffffff',
 		margin: 10
 	},
 	indicatorWrapper: {

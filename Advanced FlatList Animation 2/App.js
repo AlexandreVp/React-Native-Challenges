@@ -1,6 +1,7 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import { StatusBar, Animated, Text, Image, View, StyleSheet, Dimensions, FlatList } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
+import { set } from 'react-native-reanimated';
 
 
 const {width, height} = Dimensions.get('screen');
@@ -91,9 +92,34 @@ const Backdrop = ({ scrollX }) => {
 
 const Square = ({ scrollX }) => {
 
+	const YOLO = Animated.modulo(
+		Animated.divide(
+			Animated.modulo(scrollX, width),
+			new Animated.Value(width)
+		),
+		1
+	);
+
+	const style = {
+		transform: [
+			{
+				rotate: YOLO.interpolate({
+					inputRange: [0, 0.5, 1],
+					outputRange: ['35deg', '0deg', '35deg']
+				})
+			},
+			{
+				translateX: YOLO.interpolate({
+					inputRange: [0, 0.5, 1],
+					outputRange: [0, -height, 0]
+				})
+			}
+		]
+	}
+
 	return (
 		<Animated.View 
-			style={styles.square}
+			style={[styles.square, style]}
 		/>
 	)
 };
@@ -195,10 +221,7 @@ const styles = StyleSheet.create({
 		backgroundColor: '#ffffff',
 		borderRadius: 86,
 		position: 'absolute',
-		top: -height * 0.6,
-		left: -height * 0.3,
-		transform: [
-			{ rotate: '35deg' }
-		]
+		top: -height * 0.58,
+		left: -height * 0.3
 	}
 });

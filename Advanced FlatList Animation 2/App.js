@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { StatusBar, Animated, Text, Image, View, StyleSheet, Dimensions, FlatList } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 
@@ -30,20 +30,36 @@ const DATA = [
 		"description": "We need to program the open-source IB interface!",
 		"image": "https://image.flaticon.com/icons/png/256/3571/3571603.png"
 	}
-]
+];
+
+const Indicator = ({ scrollX }) => {
+
+	return (
+		<View>
+
+		</View>
+	)
+};
 
 export default function App() {
+
+	const scrollX = useRef(new Animated.Value(0)).current;
 
 	return (
 		<View style={styles.container}>
 			<StatusBar hidden />
-			<FlatList 
+			<Animated.FlatList 
 				data={DATA}
 				keyExtractor={item => item.key}
 				horizontal
 				contentContainerStyle={styles.contentContainerStyle}
 				showsHorizontalScrollIndicator={false}
+				onScroll={Animated.event(
+					[{nativeEvent: {contentOffset: {x: scrollX}}}],
+					{useNativeDriver: false} //nativeDriver does not support backgroundColor changes
+				)}
 				renderItem={({item}) => {
+					
 					return (
 						<View style={styles.itemWrapper}>
 							<View style={styles.imageWrapper}>
@@ -57,6 +73,7 @@ export default function App() {
 					)
 				}}
 			/>
+			<Indicator scrollX={scrollX}/>
 		</View>
 	);
 }

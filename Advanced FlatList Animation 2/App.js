@@ -133,12 +133,14 @@ const styles = StyleSheet.create({
 	},
 	title: {
 		fontWeight: 'bold',
-		fontSize: 24,
-		marginBottom: 10
+		fontSize: 28,
+		marginBottom: 10,
+		color: '#ffffff'
 	},
 	description: {
 		fontWeight: '300',
-		fontSize: 16
+		fontSize: 18,
+		color: '#ffffff'
 	},
 	indicator: {
 		width: 10,
@@ -149,7 +151,7 @@ const styles = StyleSheet.create({
 	},
 	indicatorWrapper: {
 		position: 'absolute',
-		bottom: 100,
+		bottom: 50,
 		flexDirection: 'row'
 	}
 });

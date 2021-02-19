@@ -1,9 +1,12 @@
-import React from 'react';
-import { SafeAreaView, StyleSheet, Text, View } from 'react-native';
+import React, { useRef } from 'react';
+import { SafeAreaView, StyleSheet, Text, View, Animated } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 
 
 const Progress = ({ step, steps, height }) => {
+
+	const animatedValue = useRef(new Animated.Value(-1000)).current;
+	const reactive = useRef(new Animated.Value(-1000)).current;
 
 	return (
 		<>

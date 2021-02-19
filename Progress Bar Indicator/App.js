@@ -6,6 +6,16 @@ import { StatusBar } from 'expo-status-bar';
 const Progress = ({ step, steps, height }) => {
 
 	return (
+		<>
+		<Text 
+			style={{
+				fontSize: 12,
+				fontWeight: 'bold',
+				marginBottom: 4
+			}}
+		>
+			{step}/{steps}
+		</Text>
 		<View 
 			style={{
 				height,
@@ -26,7 +36,8 @@ const Progress = ({ step, steps, height }) => {
 				}}
 			/>
 		</View>
-	)
+		</>
+	);
 };
 
 export default function App() {

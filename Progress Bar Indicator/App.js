@@ -2,8 +2,9 @@ import React, { useEffect, useRef, useState } from 'react';
 import { SafeAreaView, StyleSheet, Text, View, Animated } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 
+const STEPS_LENGTH = 10;
 
-const Progress = ({ step, steps, height, duration }) => {
+const Progress = ({ step, steps, height }) => {
 
 	const [width, setWidth] = useState(0);
 
@@ -67,10 +68,22 @@ const Progress = ({ step, steps, height, duration }) => {
 
 export default function App() {
 
+	const [index, setIndex] = useState(0);
+
+	useEffect(() => {
+		const interval = setInterval(() => {
+			setIndex((index + 1) % (STEPS_LENGTH + 1));
+		}, 500);
+
+		return () => {
+			clearInterval(interval);
+		}
+	}, [index]);
+
 	return (
 		<SafeAreaView style={styles.container}>
 			<StatusBar hidden />
-			<Progress step={1} steps={10} height={20} duration={30000}/>
+			<Progress step={index} steps={STEPS_LENGTH} height={20}/>
 		</SafeAreaView>
 	);
 }

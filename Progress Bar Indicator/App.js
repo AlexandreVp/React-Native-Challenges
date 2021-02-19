@@ -3,7 +3,7 @@ import { SafeAreaView, StyleSheet, Text, View, Animated } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 
 
-const Progress = ({ step, steps, height }) => {
+const Progress = ({ step, steps, height, duration }) => {
 
 	const [width, setWidth] = useState(0);
 
@@ -46,7 +46,7 @@ const Progress = ({ step, steps, height }) => {
 				overflow: 'hidden'
 			}}
 		>
-			<View 
+			<Animated.View 
 				style={{
 					height,
 					width: '100%',
@@ -54,7 +54,10 @@ const Progress = ({ step, steps, height }) => {
 					borderRadius: height,
 					position: 'absolute',
 					left: 0,
-					top: 0
+					top: 0,
+					transform: [
+						{ translateX: animatedValue }
+					]
 				}}
 			/>
 		</View>
@@ -67,7 +70,7 @@ export default function App() {
 	return (
 		<SafeAreaView style={styles.container}>
 			<StatusBar hidden />
-			<Progress step={1} steps={10} height={20}/>
+			<Progress step={1} steps={10} height={20} duration={30000}/>
 		</SafeAreaView>
 	);
 }

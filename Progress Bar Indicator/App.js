@@ -18,6 +18,10 @@ const Progress = ({ step, steps, height }) => {
 		}).start()
 	}, []);
 
+	useEffect(() => {
+		reactive.setValue(-width + (width * step) / steps);
+	}, [width, step]);
+
 	return (
 		<>
 		<Text 

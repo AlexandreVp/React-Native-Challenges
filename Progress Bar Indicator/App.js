@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { SafeAreaView, StyleSheet, Text, View, Animated } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 
@@ -9,6 +9,14 @@ const Progress = ({ step, steps, height }) => {
 
 	const animatedValue = useRef(new Animated.Value(-1000)).current;
 	const reactive = useRef(new Animated.Value(-1000)).current;
+
+	useEffect(() => {
+		Animated.timing(animatedValue, {
+			toValue: reactive,
+			duration: 300,
+			useNativeDriver: true
+		}).start()
+	}, []);
 
 	return (
 		<>

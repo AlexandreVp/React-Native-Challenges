@@ -1,9 +1,11 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import { SafeAreaView, StyleSheet, Text, View, Animated } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 
 
 const Progress = ({ step, steps, height }) => {
+
+	const [width, setWidth] = useState(0);
 
 	const animatedValue = useRef(new Animated.Value(-1000)).current;
 	const reactive = useRef(new Animated.Value(-1000)).current;
@@ -19,7 +21,12 @@ const Progress = ({ step, steps, height }) => {
 		>
 			{step}/{steps}
 		</Text>
-		<View 
+		<View
+			onLayout={ev => {
+				const newWidth = ev.nativeEvent.layout.width;
+
+				setWidth(newWidth);
+			}}
 			style={{
 				height,
 				backgroundColor: 'rgba(0,0,0,0.1)',

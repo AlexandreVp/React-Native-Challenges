@@ -88,15 +88,37 @@ export default () => {
                         {useNativeDriver: true} 
                     )}
                     renderItem={({ item, index }) => {
+
+                        const inputRange = [
+                            (index - 1) * width,
+                            index * width,
+                            (index + 1) * width
+                        ];
+
+                        const style = {
+                            opacity: scrollX.interpolate({
+                                inputRange,
+                                outputRange: [0, 1, 0]
+                            }),
+                            transform: [
+                                {
+                                    translateY: scrollX.interpolate({
+                                        inputRange,
+                                        outputRange: [50, 0, 20]
+                                    }),
+                                }
+                            ]
+                        }
+
                         return (
-                            <View
-                                style={styles.imageWrapper}
+                            <Animated.View
+                                style={[styles.imageWrapper, style]}
                             >
                                 <Image
                                     source={{ uri: item.image }}
                                     style={styles.image}
                                 />
-                            </View>
+                            </Animated.View>
                         );
                     }}
                 />

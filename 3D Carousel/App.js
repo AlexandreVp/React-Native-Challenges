@@ -74,6 +74,8 @@ export default () => {
         width
     );
 
+    const ref = useRef();
+
     const [index, setIndex] = useState(0);
 
     const backdropStyle = {
@@ -90,11 +92,16 @@ export default () => {
         ]
     }
 
+    const scrollForwardHandler = () => {
+
+    };
+
     return (
         <SafeAreaView style={styles.container}>
             <StatusBar hidden />
             <View style={styles.card}>
                 <Animated.FlatList
+                    ref={ref}
                     data={DATA}
                     keyExtractor={(item) => item.key}
                     horizontal
@@ -103,14 +110,13 @@ export default () => {
                     style={{ flexGrow: 0, zIndex: 100 }}
                     contentContainerStyle={styles.contentContainerStyle}
                     showsHorizontalScrollIndicator={false}
+                    scrollEventThrottle={16}
                     onScroll={Animated.event(
                         [{nativeEvent: {contentOffset: {x: scrollX}}}],
                         {useNativeDriver: true} 
                     )}
                     onMomentumScrollEnd={ev => {
-                        let activeIndex = Math.round(ev.nativeEvent.contentOffset.x / width);
-
-                        setIndex(activeIndex);
+                        setIndex(Math.round(ev.nativeEvent.contentOffset.x / width));
                     }}
                     renderItem={({ item, index }) => {
 
@@ -191,7 +197,13 @@ export default () => {
                 <TouchableOpacity
                     disabled={index === 0}
                     style={{ opacity: index === 0 ? 0.2 : 1 }}
-                    onPress={() => {}}
+                    onPress={() => {
+                        ref?.current?.scrollToOffset({
+                            offset: (index - 1) * width,
+                            animated: true
+                        });
+                        setIndex(index - 1);
+                    }}
                 >
                     <View style={styles.button}>
                         <AntDesign name='swapleft' size={42} color='black' />
@@ -201,7 +213,13 @@ export default () => {
                 <TouchableOpacity
                     disabled={index === DATA.length - 1}
                     style={{ opacity: index === DATA.length - 1 ? 0.2 : 1 }}
-                    onPress={() => {}}
+                    onPress={() => {
+                        ref?.current?.scrollToOffset({
+                            offset: (index + 1) * width,
+                            animated: true
+                        });
+                        setIndex(index + 1);
+                    }}
                 >
                     <View style={styles.button}>
                         <Text style={styles.buttonText}>NEXT</Text>

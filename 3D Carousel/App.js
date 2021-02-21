@@ -151,13 +151,26 @@ export default () => {
                             (index + 0.2) * width
                         ];
 
-                        const opacity = scrollX.interpolate({
-                            inputRange,
-                            outputRange: [0, 1, 0]
-                        });
+                        const style = {
+                            opacity: scrollX.interpolate({
+                                inputRange,
+                                outputRange: [0, 1, 0]
+                            }),
+                            transform: [
+                                {
+                                    rotateY: scrollX.interpolate({
+                                        inputRange,
+                                        outputRange: ['-40deg', '0deg', '40deg']
+                                    })
+                                },
+                                {
+                                    perspective: IMAGE_WIDTH * 4
+                                }
+                            ]
+                        }
 
                         return (
-                            <Animated.View key={item.key} style={{ position: 'absolute', opacity }}>
+                            <Animated.View key={item.key} style={[styles.content, style]}>
                                 <Content item={item}/>
                             </Animated.View>
                         )

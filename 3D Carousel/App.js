@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { FlatList, Image, Animated, Text, View, Dimensions, StyleSheet, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { AntDesign } from '@expo/vector-icons';
@@ -68,11 +68,13 @@ const Content = ({ item }) => {
 
 export default () => {
 
+    const scrollX = useRef(new Animated.Value(0)).current;
+
     return (
         <SafeAreaView style={styles.container}>
             <StatusBar hidden />
             <View style={styles.card}>
-                <FlatList
+                <Animated.FlatList
                     data={DATA}
                     keyExtractor={(item) => item.key}
                     horizontal
@@ -81,6 +83,10 @@ export default () => {
                     style={{ flexGrow: 0 }}
                     contentContainerStyle={styles.contentContainerStyle}
                     showsHorizontalScrollIndicator={false}
+                    onScroll={Animated.event(
+                        [{nativeEvent: {contentOffset: {x: scrollX}}}],
+                        {useNativeDriver: true} 
+                    )}
                     renderItem={({ item, index }) => {
                         return (
                             <View

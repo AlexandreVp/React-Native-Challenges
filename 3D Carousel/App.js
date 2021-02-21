@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import { FlatList, Image, Animated, Text, View, Dimensions, StyleSheet, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { AntDesign } from '@expo/vector-icons';
@@ -74,6 +74,8 @@ export default () => {
         width
     );
 
+    const [index, setIndex] = useState(0);
+
     const backdropStyle = {
         transform: [
             {
@@ -105,6 +107,11 @@ export default () => {
                         [{nativeEvent: {contentOffset: {x: scrollX}}}],
                         {useNativeDriver: true} 
                     )}
+                    onMomentumScrollEnd={ev => {
+                        let activeIndex = Math.round(ev.nativeEvent.contentOffset.x / width);
+
+                        setIndex(activeIndex);
+                    }}
                     renderItem={({ item, index }) => {
 
                         const inputRange = [
@@ -146,9 +153,9 @@ export default () => {
                     {DATA.map((item, index) => {
 
                         const inputRange = [
-                            (index - 0.2) * width,
+                            (index - 0.3) * width,
                             index * width,
-                            (index + 0.2) * width
+                            (index + 0.3) * width
                         ];
 
                         const style = {
@@ -160,7 +167,7 @@ export default () => {
                                 {
                                     rotateY: scrollX.interpolate({
                                         inputRange,
-                                        outputRange: ['-40deg', '0deg', '40deg']
+                                        outputRange: ['-45deg', '0deg', '45deg']
                                     })
                                 },
                                 {

@@ -69,6 +69,10 @@ const Content = ({ item }) => {
 export default () => {
 
     const scrollX = useRef(new Animated.Value(0)).current;
+    const progress = Animated.modulo(
+        Animated.divide(scrollX, width),
+        width
+    );
 
     return (
         <SafeAreaView style={styles.container}>

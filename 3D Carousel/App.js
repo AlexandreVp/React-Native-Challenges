@@ -98,7 +98,7 @@ export default () => {
                     horizontal
                     pagingEnabled
                     bounces={false}
-                    style={{ flexGrow: 0, zIndex: 100, elevation: 100 }}
+                    style={{ flexGrow: 0, zIndex: 100 }}
                     contentContainerStyle={styles.contentContainerStyle}
                     showsHorizontalScrollIndicator={false}
                     onScroll={Animated.event(
@@ -143,7 +143,25 @@ export default () => {
                 <View
                     style={styles.contentWrapper}
                 >
-                    <Content item={DATA[0]} />
+                    {DATA.map((item, index) => {
+
+                        const inputRange = [
+                            (index - 0.2) * width,
+                            index * width,
+                            (index + 0.2) * width
+                        ];
+
+                        const opacity = scrollX.interpolate({
+                            inputRange,
+                            outputRange: [0, 1, 0]
+                        });
+
+                        return (
+                            <Animated.View key={item.key} style={{ position: 'absolute', opacity }}>
+                                <Content item={item}/>
+                            </Animated.View>
+                        )
+                    })}
                 </View>
                 <Animated.View
                     style={[styles.backdrop, backdropStyle]}
@@ -220,6 +238,10 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         paddingHorizontal: SPACING * 2,
         marginLeft: SPACING * 2,
+        zIndex: 100
+    },
+    content: {
+        position: 'absolute',
     },
     backdrop: {
         width: IMAGE_WIDTH + SPACING * 2,
@@ -227,6 +249,7 @@ const styles = StyleSheet.create({
         backgroundColor: 'white',
         backfaceVisibility: 'visible',
         zIndex: -1,
+        elevation: -1,
         top: SPACING * 2,
         left: SPACING,
         bottom: 0,

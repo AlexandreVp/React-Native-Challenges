@@ -188,13 +188,21 @@ export default () => {
                 />
             </View>
             <View style={styles.buttonsWrapper}>
-                <TouchableOpacity onPress={() => {}}>
+                <TouchableOpacity
+                    disabled={index === 0}
+                    style={{ opacity: index === 0 ? 0.2 : 1 }}
+                    onPress={() => {}}
+                >
                     <View style={styles.button}>
                         <AntDesign name='swapleft' size={42} color='black' />
                         <Text style={styles.buttonText}>PREV</Text>
                     </View>
                 </TouchableOpacity>
-                <TouchableOpacity onPress={() => {}}>
+                <TouchableOpacity
+                    disabled={index === DATA.length - 1}
+                    style={{ opacity: index === DATA.length - 1 ? 0.2 : 1 }}
+                    onPress={() => {}}
+                >
                     <View style={styles.button}>
                         <Text style={styles.buttonText}>NEXT</Text>
                         <AntDesign name='swapright' size={42} color='black' />

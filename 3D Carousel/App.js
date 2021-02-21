@@ -74,6 +74,20 @@ export default () => {
         width
     );
 
+    const backdropStyle = {
+        transform: [
+            {
+                perspective: IMAGE_WIDTH * 4,
+            },
+            {
+                rotateY: progress.interpolate({
+                    inputRange: [0, 0.5, 1],
+                    outputRange: ['0deg', '90deg', '180deg']
+                })
+            }
+        ]
+    }
+
     return (
         <SafeAreaView style={styles.container}>
             <StatusBar hidden />
@@ -84,7 +98,7 @@ export default () => {
                     horizontal
                     pagingEnabled
                     bounces={false}
-                    style={{ flexGrow: 0 }}
+                    style={{ flexGrow: 0, zIndex: 100, elevation: 100 }}
                     contentContainerStyle={styles.contentContainerStyle}
                     showsHorizontalScrollIndicator={false}
                     onScroll={Animated.event(
@@ -131,8 +145,8 @@ export default () => {
                 >
                     <Content item={DATA[0]} />
                 </View>
-                <View
-                    style={styles.backdrop}
+                <Animated.View
+                    style={[styles.backdrop, backdropStyle]}
                 />
             </View>
             <View style={styles.buttonsWrapper}>

@@ -5,3 +5,4 @@ Animated Tabs
 Gallery View
 Movies Carousel
 Zara's Carousel
+Dark Theme
